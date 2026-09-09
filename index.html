@@ -17,39 +17,50 @@
     <style>
         .information-button {
             position: fixed;
-            right: 24px;
-            bottom: 24px;
-            z-index: 1000;
+          right: clamp(16px, 3vw, 32px);
+          bottom: clamp(16px, 3vw, 32px);
+            z-index: 10000;
             display: inline-flex;
             max-width: calc(100vw - 32px);
-            min-height: 48px;
+          min-height: 44px;
             box-sizing: border-box;
             align-items: center;
             justify-content: center;
-            padding: 12px 20px;
-            border-radius: 999px;
-            background: #222;
-            color: #fff;
-            font-family: Georgia, serif;
-            font-size: 1.5rem;
-            font-weight: bold;
+          padding: 10px 16px;
+          border: 1px solid #39ff14;
+          border-radius: 2px;
+          background: rgba(3, 23, 7, 0.94);
+          color: #39ff14;
+          font-family: "VT323", monospace;
+          font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+          font-weight: normal;
             line-height: 1.2;
+          letter-spacing: 0.12em;
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-            transition: background-color 0.2s ease, transform 0.2s ease;
+          text-transform: uppercase;
+          box-shadow: 0 0 12px rgba(57, 255, 20, 0.2), inset 0 0 8px rgba(57, 255, 20, 0.08);
+          text-shadow: 0 0 8px rgba(57, 255, 20, 0.65);
+          transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
         }
     
         .information-button:hover,
         .information-button:focus-visible {
-            background: #555;
-            transform: translateY(-2px);
+          border-color: #e61c1c;
+          background: rgba(128, 11, 11, 0.94);
+          color: #fff0e5;
+          transform: translateY(-3px);
+          box-shadow: 0 0 16px rgba(230, 28, 28, 0.45), inset 0 0 8px rgba(230, 28, 28, 0.16);
+          text-shadow: 0 0 8px rgba(255, 90, 70, 0.7);
         }
     
         @media (max-width: 480px) {
             .information-button {
                 right: 16px;
                 bottom: 16px;
+              max-width: calc(100vw - 32px);
+              padding: 9px 12px;
+              font-size: 1.2rem;
             }
         }
     </style>
@@ -461,6 +472,8 @@
     <button class="btn btn--restart" id="restartBtn" type="button">✦ recommencer l'épreuve ✦</button>
   </div>
 </section>
+
+<a class="information-button" href="information.html" aria-label="En apprendre plus sur LE DISTRIBUTEUR">En apprendre plus sur LE DISTRIBUTEUR</a>
 
 <script src="script-v2.js"></script>
 </body>
