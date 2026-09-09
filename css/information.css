@@ -46,7 +46,7 @@
 	padding: 0 clamp(20px, 6vw, 96px);
 	border-bottom: 1px solid #292929;
 	background: #050505;
-	font-size: 0.65rem;
+	font-size: 2rem;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 }
@@ -106,7 +106,7 @@
 .card-label {
 	margin: 0 0 20px;
 	color: #e90036;
-	font-size: 0.7rem;
+	font-size: 2rem;
 	font-weight: bold;
 	letter-spacing: 0.2em;
 }
@@ -127,11 +127,11 @@
 }
 
 .hero-intro {
-	max-width: 430px;
-	margin: 32px 0 24px;
-	color: #bababa;
-	font-size: 0.82rem;
-	line-height: 1.8;
+	max-width: 900px;
+	margin: 56px 0 42px;
+	color: #d0d0d0;
+	font-size: 2.3rem;
+	line-height: 1.65;
 }
 
 .hero-rule {
@@ -143,9 +143,9 @@
 
 .hero-note {
 	margin: 0;
-	color: #727272;
-	font-size: 0.7rem;
-	line-height: 1.7;
+	color: #a8a8a8;
+	font-size: 1.9rem;
+	line-height: 1.65;
 	text-transform: uppercase;
 }
 
@@ -171,13 +171,12 @@
 }
 
 .file-stamp {
-	position: absolute;
-	top: 30px;
-	right: -22px;
+	display: table;
+	margin: 0 0 14px auto;
 	padding: 8px 12px;
 	border: 2px solid #e90036;
 	color: #e90036;
-	font-size: 0.65rem;
+	font-size: 2rem;
 	font-weight: bold;
 	letter-spacing: 0.1em;
 	transform: rotate(8deg);
@@ -191,7 +190,7 @@
 }
 
 .poster-file figcaption span {
-	font-size: 0.6rem;
+	font-size: 1.9rem;
 	letter-spacing: 0.12em;
 }
 
@@ -222,7 +221,7 @@
 .trailer-heading > p:last-child {
 	margin: 24px 0 0;
 	color: #919191;
-	font-size: 0.75rem;
+	font-size: 2.2rem;
 	line-height: 1.7;
 }
 
@@ -246,7 +245,7 @@
 	right: 14px;
 	bottom: 8px;
 	color: #e90036;
-	font-size: 0.58rem;
+	font-size: 1.8rem;
 	letter-spacing: 0.12em;
 }
 
@@ -305,14 +304,14 @@
 	margin: 0;
 	padding: 16px 0;
 	border-bottom: 1px solid #b8b6b1;
-	font-size: 0.8rem;
+	font-size: 2.2rem;
 }
 
 .metadata span {
 	display: block;
 	margin-bottom: 5px;
 	color: #e90036;
-	font-size: 0.62rem;
+	font-size: 1.9rem;
 	font-weight: bold;
 	letter-spacing: 0.14em;
 }
@@ -340,7 +339,7 @@
 .credit-card p:last-child {
 	margin: 0;
 	color: #9a9a9a;
-	font-size: 0.75rem;
+	font-size: 2.2rem;
 	line-height: 1.7;
 }
 
@@ -368,7 +367,7 @@
 	border: 1px solid #c4c1b9;
 	background: #f4f2ed;
 	font-family: Georgia, serif;
-	font-size: 0.88rem;
+	font-size: 2.3rem;
 	line-height: 1.55;
 }
 
@@ -379,7 +378,7 @@
 	color: #e90036;
 	content: "//";
 	font-family: "Courier New", monospace;
-	font-size: 0.7rem;
+	font-size: 1.9rem;
 	font-weight: bold;
 }
 
@@ -417,7 +416,7 @@
 	color: #f3f1ec;
 	cursor: pointer;
 	font-family: Georgia, serif;
-	font-size: clamp(1.1rem, 2vw, 1.65rem);
+	font-size: clamp(1.6rem, 2.8vw, 2.4rem);
 	list-style: none;
 }
 
@@ -440,7 +439,7 @@
 	max-width: 720px;
 	margin: 0 50px 24px 0;
 	color: #a4a4a4;
-	font-size: 0.85rem;
+	font-size: 2.2rem;
 	line-height: 1.7;
 }
 
@@ -450,7 +449,7 @@
 	padding: 28px clamp(20px, 8vw, 140px);
 	background: #050505;
 	color: #666;
-	font-size: 0.62rem;
+	font-size: 1.9rem;
 	letter-spacing: 0.12em;
 }
 
@@ -465,7 +464,7 @@
 		min-height: 64px;
 		gap: 12px;
 		padding: 0 18px;
-		font-size: 0.55rem;
+		font-size: 1.8rem;
 	}
 
 	.header-status {
