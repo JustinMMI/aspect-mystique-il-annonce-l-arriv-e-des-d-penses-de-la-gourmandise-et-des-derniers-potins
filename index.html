@@ -348,10 +348,9 @@
           <small id="panelState">HORS LIGNE</small>
         </div>
         <div class="pad">
-          <button type="button">A</button><button type="button">B</button><button type="button">C</button>
-          <button type="button">D</button><button type="button">1</button><button type="button">2</button>
-          <button type="button">3</button><button type="button">4</button>
-          <button type="button" class="k-eye" aria-label="touche 5"><img src="assets/img/oeil.png" alt=""></button>
+          <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+          <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+          <button type="button">7</button><button type="button">8</button><button type="button">9</button>
           <button type="button" class="k-no">C</button><button type="button">0</button>
           <button type="button" class="k-ok">OK</button>
         </div>
@@ -472,6 +471,17 @@
     <button class="btn btn--restart" id="restartBtn" type="button">✦ recommencer l'épreuve ✦</button>
   </div>
 </section>
+
+<button class="hint-btn" id="hintBtn" type="button" aria-label="Ouvrir l'aide">?</button>
+
+<div class="hint-modal" id="hintModal" hidden aria-hidden="true">
+  <div class="hint-modal__box" role="dialog" aria-modal="true" aria-labelledby="hintTitle">
+    <button class="hint-modal__close" id="hintClose" type="button" aria-label="Fermer l'aide">×</button>
+    <h2 class="hint-modal__title" id="hintTitle">AIDE // CONSEILS DE SURVIE</h2>
+    <p class="hint-modal__text" id="hintText"></p>
+    <button class="btn btn--hint-next" id="hintNext" type="button">CONSEIL SUIVANT</button>
+  </div>
+</div>
 
 <a class="information-button" href="information.html" aria-label="En apprendre plus sur LE DISTRIBUTEUR">En apprendre plus sur LE DISTRIBUTEUR</a>
 

@@ -442,6 +442,8 @@ let motsExacts = [];
 let expressions = [];
 let phrasesBidons = [];
 let motsExclus = [];
+let motsSujets = [];
+let motsVerbes = [];
 let reglesJugement = {};
 let repliquesRejet = [];
 let repliquesAcceptation = [];
@@ -453,7 +455,7 @@ async function chargerDonnees() {
   const response = await fetch("data/potin.json");
   if (!response.ok) throw new Error("Impossible de charger data/potin.json");
   const donnees = await response.json();
-  ({ racines, motsExacts, expressions, phrasesBidons, motsExclus, regles: reglesJugement } = donnees.jugement);
+  ({ racines, motsExacts, expressions, phrasesBidons, motsExclus, motsSujets, motsVerbes, regles: reglesJugement } = donnees.jugement);
   ({ repliquesRejet, repliquesAcceptation, paliers, marmonnements, motsScare } = donnees);
 }
 
@@ -465,17 +467,43 @@ const testRacine = (norm, r) =>
 const testExact = (norm, m) =>
   new RegExp(`(^|[^a-z0-9])${escapeRe(m)}([^a-z0-9]|$)`).test(norm);
 
+const terminaisonsVerbales = [
+  /(?:er|ir|re)$/, /(?:ais|ait|aient|ions|iez)$/, /(?:erez|eront|irez|iront|ront)$/,
+];
+
+function ressembleAUnVerbe(mot) {
+  const normalise = normalize(mot.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, ""));
+  return normalise.length > 3 && terminaisonsVerbales.some((terminaison) => terminaison.test(normalise));
+}
+
 function juger(texte) {
   const brut = texte.trim();
   const mots = brut.split(/\s+/).filter(Boolean);
   const norm = normalize(brut);
 
-  if (mots.length < reglesJugement.motsMinimum) return { accepte: false, raison: "court" };
+  if (mots.length < reglesJugement.motsMinimum || mots.length < reglesJugement.motsMinimumPhrase) {
+    return { accepte: false, raison: "phrase" };
+  }
   if (mots.length <= reglesJugement.motsMaximumPourPhraseBidon) {
     for (const bidon of phrasesBidons) {
       if (norm.includes(normalize(bidon))) return { accepte: false, raison: "bidon" };
     }
   }
+
+  const nomPropre = mots.some((m) => {
+    const w = m.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, "");
+    if (w.length <= 1 || motsExclus.includes(w)) return false;
+    return /^[A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ'’-]+$/.test(w) || /^[A-ZÀ-ÖØ-Þ]{2,}$/.test(w);
+  });
+
+  const motsNormalises = mots.map((mot) => normalize(mot.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, "")));
+  const sujetLibre = ["le", "la", "les", "un", "une", "des", "mon", "ma", "mes", "son", "sa", "ses", "ce", "cette", "ces"];
+  const sujet = motsSujets.some((mot) => testExact(norm, normalize(mot))) ||
+    sujetLibre.includes(motsNormalises[0]) || nomPropre;
+  const verbeListe = motsVerbes.some((mot) => testExact(norm, normalize(mot)));
+  const verbeLibre = motsNormalises.some((mot, index) => index > 0 && ressembleAUnVerbe(mot));
+  const verbe = verbeListe || verbeLibre || expressions.some((expression) => norm.includes(normalize(expression)));
+  if (!sujet || !verbe) return { accepte: false, raison: "phrase" };
 
   let score = 0;
   const trouves = new Set();
@@ -486,12 +514,6 @@ function juger(texte) {
     trouves.size * reglesJugement.pointsParCorrespondance,
     reglesJugement.pointsMaximumMotsCles,
   );
-
-  const nomPropre = mots.slice(1).some((m) => {
-    const w = m.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, "");
-    if (w.length <= 1 || motsExclus.includes(w)) return false;
-    return /^[A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ'’-]+$/.test(w) || /^[A-ZÀ-ÖØ-Þ]{2,}$/.test(w);
-  });
   if (nomPropre) score += reglesJugement.pointsNomPropre;
 
   if (mots.length > reglesJugement.motsPourPremierBonusLongueur) {
@@ -792,6 +814,33 @@ function handleKeypadClick(char) {
   }
 }
 
+function clearKeypadSelection() {
+  if (partie.etat !== "WAITING") return;
+  el.panelCode.textContent = "--";
+  el.panelState.textContent = "EN ATTENTE";
+  Audio_.blip(false);
+}
+
+function validateKeypadSelection() {
+  if (partie.etat !== "WAITING") return;
+  const selection = el.panelCode.textContent;
+  if (selection === "--" || selection === "00") return;
+
+  const screen = el.panelCode.closest(".screen");
+  screen.classList.remove("is-validating");
+  void screen.offsetWidth;
+  screen.classList.add("is-validating");
+  el.panelState.textContent = "VALIDÉ";
+  Audio_.blip(true);
+
+  setTimeout(() => {
+    if (partie.etat !== "WAITING" || el.panelCode.textContent !== selection) return;
+    el.panelCode.textContent = "--";
+    el.panelState.textContent = "EN ATTENTE";
+    screen.classList.remove("is-validating");
+  }, 650);
+}
+
 
 function buildParadise() {
   el.parClouds.innerHTML = "";
@@ -904,6 +953,14 @@ $$(".slot-coin, .slot-bill, .pay__row").forEach((slot) => {
 });
 $$(".pad button").forEach((btn) => {
   btn.addEventListener("click", () => {
+    if (btn.classList.contains("k-no")) {
+      clearKeypadSelection();
+      return;
+    }
+    if (btn.classList.contains("k-ok")) {
+      validateKeypadSelection();
+      return;
+    }
     const char = btn.textContent.trim() || "5";
     handleKeypadClick(char);
   });

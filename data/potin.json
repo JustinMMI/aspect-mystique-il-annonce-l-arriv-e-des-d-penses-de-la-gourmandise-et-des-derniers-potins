@@ -65,6 +65,22 @@
       "fois", "premiere", "deuxieme", "troisieme", "toujours", "jamais", "encore", "maintenant", "demain", "hier"
     ],
     "motsExacts": ["ex", "vol", "nue", "nu"],
+    "motsSujets": [
+      "je", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles", "quelqu un", "quelqu un",
+      "le", "la", "un", "une", "mon", "ma", "mes", "son", "sa", "ses", "ce", "cette", "ces"
+    ],
+    "motsVerbes": [
+      "a", "ai", "as", "ont", "est", "sont", "va", "vais", "vas", "vont", "fait", "font", "fais",
+      "dit", "dis", "disent", "voit", "vois", "voient", "vient", "viens", "viennent", "sort", "sors",
+      "sorti", "sortait", "sortent", "prend", "prends", "prennent", "vend", "vends", "achete", "achetes",
+      "achete", "paie", "payes", "paye", "doit", "dois", "doivent", "peut", "peux", "peuvent", "veut",
+      "veux", "veulent", "sait", "sais", "savez", "connait", "connais", "raconte", "racontait", "parle",
+      "parlent", "cache", "cachait", "ment", "mentait", "vole", "volait", "triche", "trichait", "embrasse",
+      "embrassait", "drague", "draguait", "quitte", "quittait", "trompe", "trompait", "ignore", "bloque",
+      "supprime", "publie", "partage", "envoie", "recoit", "regarde", "observe", "espionne", "attend",
+      "travaille", "etudie", "habite", "dort", "pleure", "rit", "crie", "tremble", "aime", "deteste",
+      "prefere", "recommande", "regarde", "hante", "disparait", "arrive", "tombe", "ouvre", "ferme"
+    ],
     "expressions": [
       "sort avec", "sortent ensemble", "vu avec", "en cachette", "dans le dos", "personne ne sait",
       "jure de ne rien dire", "il parait que", "on m a dit", "tout le monde le sait", "s est fait",
@@ -112,6 +128,7 @@
       "pointsPremierBonusLongueur": 1,
       "motsPourSecondBonusLongueur": 12,
       "pointsSecondBonusLongueur": 1
+      ,"motsMinimumPhrase": 4
     }
   },
   "repliquesRejet": [
