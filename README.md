@@ -32,6 +32,8 @@ Le premier écran demande une interaction avant de lancer la machine. Cette
 - couloir d'école nocturne, effets VHS et ambiance bio-mécanique ;
 - distributeur animé avec yeux, produits et interface de commande ;
 - saisie d'un potin dans la boîte de dialogue ;
+- bouton d'aide en haut à droite avec conseils de survie ;
+- pavé numérique `1` à `9`, touche `C` pour effacer et touche `OK` pour valider ;
 - jugement, tension progressive, jump scare et paradis final ;
 - bouton fixe permettant d'ouvrir la page d'information.
 
@@ -55,8 +57,17 @@ La boucle principale suit ce déroulement :
 Le rejet déclenche un jump scare et renvoie vers la saisie. L'acceptation ouvre
 le paradis, puis permet de recommencer.
 
-Le jugement est entièrement déterministe et local. Le texte reçoit un score
-selon plusieurs critères :
+Le jugement est entièrement déterministe et local. Avant le calcul du score,
+le texte doit ressembler à une phrase :
+
+- au moins quatre mots ;
+- un sujet identifiable, comme un pronom, un déterminant ou un nom propre ;
+- un verbe ou une tournure verbale ;
+- les verbes inconnus sont aussi reconnus grâce à des heuristiques sur leurs
+	terminaisons françaises.
+
+Une suite de mots-clés sans structure de phrase est donc refusée. Une fois la
+phrase validée, le texte reçoit un score selon plusieurs critères :
 
 - présence de mots forts liés aux secrets, aux mensonges ou aux dettes ;
 - présence probable d'un nom propre ;
@@ -65,6 +76,9 @@ selon plusieurs critères :
 
 À chaque partie, la machine choisit un seuil d'exigence entre 3 et 5. Ce seuil
 n'est jamais affiché au joueur.
+
+Les indices affichés par le bouton d'aide reprennent ces règles et proposent des
+exemples de potins valides.
 
 ## Audio et stockage
 
@@ -89,6 +103,10 @@ assets/img/                Produits et éléments graphiques de la machine
 assets/sounds/             Documentation des sons optionnels
 fonts/                     Polices locales du projet
 ```
+
+Le dictionnaire contient plusieurs centaines de racines, expressions et
+marqueurs linguistiques liés aux relations, à l'école, aux réseaux sociaux, à
+l'argent, au cinéma, à la gourmandise et à l'ambiance horrifique du projet.
 
 Le projet fonctionne sans framework, backend ou dépendance JavaScript. Les
 Google Fonts sont utilisées par la page principale avec des polices de repli.
