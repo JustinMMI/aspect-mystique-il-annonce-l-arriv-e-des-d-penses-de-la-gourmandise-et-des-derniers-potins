@@ -1,87 +1,94 @@
 # LE DISTRIBUTEUR
 
-Mini-jeu web d'horreur. Un distributeur automatique doté de trois yeux réclame un
-**potin** en offrande, le juge, et selon son humeur du moment vous recale d'un
-jump scare glitché… ou vous ouvre sa porte sur un paradis doré où tout le monde
-papote, festoie et dépense sans compter.
+Expérience web interactive de thriller horrifique. Un distributeur automatique
+doté de trois yeux réclame un potin, le juge selon son humeur, puis déclenche
+un rejet brutal ou ouvre un paradis aussi étrange que somptueux.
 
-Projet MMI — thème imposé : *« aspect mystique, il annonce l'arrivée des dépenses,
-de la gourmandise et des derniers potins ».*
+Projet MMI autour du thème : « aspect mystique, il annonce l'arrivée des
+dépenses, de la gourmandise et des derniers potins ».
 
-## Lancer
+## Lancer le projet
 
-Ouvrir `index.html` dans un navigateur. C'est tout : HTML/CSS/JS pur, aucun
-framework, aucune dépendance, aucun backend, aucun appel réseau (hormis les
-Google Fonts, avec polices de repli si elles ne chargent pas).
+Le jeu charge son dictionnaire depuis `data/potin.json`. Il faut donc le lancer
+avec un serveur statique, par exemple avec Live Server ou :
 
-Un serveur statique fonctionne aussi (`npx serve`, extension Live Server…).
-
-Le premier écran demande d'appuyer pour allumer la machine : les navigateurs
-interdisent de démarrer le son sans un geste de l'utilisateur.
-
-## Mise en scène
-
-La machine n'est pas l'interface : c'est un **objet planté dans un couloir
-d'école la nuit** (mur carrelé, casiers, néon qui grésille, sol en fuite, halo
-rouge au sol). Toute la parole passe par une **boîte de dialogue en bas de
-l'écran**, écrite lettre par lettre — celle de la machine comme la vôtre, avec
-son bip de frappe. Les instruments (jauge, paliers, codes hexadécimaux,
-compteur) restent, eux, sur le distributeur.
-
-## Boucle de jeu
-
-`BOOT` → `WAITING_INPUT` → `JUDGING` → `REJETÉ` (jump scare, retour à la saisie)
-ou `ACCEPTÉ` (ouverture d'iris sur le paradis, puis `RECOMMENCER`).
-
-Tout tient dans une seule page : le paradis n'est pas un autre fichier, c'est un
-changement de décor complet (palette, typo, animations, ambiance sonore).
-
-### La montée de tension (phase d'analyse)
-
-L'analyse dure 3,6 à 4,6 s et se joue en trois paliers, `ANALYSE` →
-`RECOUPEMENT` → `VERDICT` : le cadrage se resserre lentement sur la machine,
-l'image zoome, la carrosserie tremble de plus en plus vite, le néon grésille, la
-jauge cale puis **recule**, le label passe du vert à l'ambre puis au rouge, un
-cœur bat de plus en plus fort, une nappe monte en fréquence — et la machine
-marmonne une phrase dans la boîte du bas. Puis **tout se coupe** : silence
-complet, œil figé, trois points de suspension. C'est là que tombe le verdict.
-
-## Le jugement (aucune IA)
-
-`script.js`, section 5. Le potin reçoit un score :
-
-- **+2** par mot fort distinct trouvé (`trompé`, `secret`, `dette`, `en cachette`…),
-  plafonné à **+6** pour empêcher le spam d'un même mot ;
-- **+1** si un nom propre semble visé (majuscule ailleurs qu'en début de phrase) ;
-- **+1** si la phrase dépasse 10 mots ;
-- **rejet automatique** sous 3 mots ou si la phrase contient « rien »,
-  « je sais pas », « chépa »…
-
-À chaque `BOOT`, la machine tire une **humeur** : un seuil d'exigence entre 3 et 5.
-Le joueur ne le connaît jamais — la machine reste arbitraire, c'est le ressort
-comique. Ni le score ni le seuil ne sont affichés.
-
-## Compteur
-
-`localStorage` conserve le nombre de tentatives et de rejets entre les parties
-(clé `distributeur.v1`), affiché en bas de la vitrine façon compteur de morts
-d'un jeu d'arcade — invisible tant qu'aucune tentative n'a eu lieu.
-
-## Sons
-
-Synthétisés en Web Audio, aucun fichier requis. Pour brancher de vrais samples,
-voir `assets/sounds/README.md`.
-
-## Fichiers
-
-```
-index.html         couloir, machine, yeux SVG, boîte de dialogue, paradis
-style.css          les deux ambiances (couloir CRT / intérieur doré)
-script.js          machine à états, jugement, sons, montée de tension
-assets/sounds/     emplacement des samples optionnels
-assets/img/        (vide : décor et textures sont générés en SVG/CSS)
+```bash
+npx serve .
 ```
 
-Aucune image externe : les textures (crasse, grain, carrelage, lino) sont
-générées en CSS et en SVG inline — rien à télécharger, rien qui casse si le
-projet est déplacé ou rendu hors ligne.
+Ouvrir ensuite l'adresse locale fournie par le serveur, généralement
+`http://localhost:3000`.
+
+Le premier écran demande une interaction avant de lancer la machine. Cette
+étape est nécessaire pour permettre la lecture des sons dans les navigateurs.
+
+## Pages
+
+### Accueil et jeu
+
+`index.html` contient l'expérience principale :
+
+- écran d'allumage de la machine ;
+- couloir d'école nocturne, effets VHS et ambiance bio-mécanique ;
+- distributeur animé avec yeux, produits et interface de commande ;
+- saisie d'un potin dans la boîte de dialogue ;
+- jugement, tension progressive, jump scare et paradis final ;
+- bouton fixe permettant d'ouvrir la page d'information.
+
+### Page d'information
+
+`information.html` présente LE DISTRIBUTEUR dans un dossier éditorial :
+
+- affiche du film ;
+- bande-annonce vidéo ;
+- synopsis et informations principales ;
+- équipe du film ;
+- avis de la communauté ;
+- FAQ interactive.
+
+## Fonctionnement du jeu
+
+La boucle principale suit ce déroulement :
+
+`BOOT` → `WAITING_INPUT` → `JUDGING` → `REJETÉ` ou `ACCEPTÉ`
+
+Le rejet déclenche un jump scare et renvoie vers la saisie. L'acceptation ouvre
+le paradis, puis permet de recommencer.
+
+Le jugement est entièrement déterministe et local. Le texte reçoit un score
+selon plusieurs critères :
+
+- présence de mots forts liés aux secrets, aux mensonges ou aux dettes ;
+- présence probable d'un nom propre ;
+- longueur de la phrase ;
+- rejet automatique des réponses trop courtes ou trop vagues.
+
+À chaque partie, la machine choisit un seuil d'exigence entre 3 et 5. Ce seuil
+n'est jamais affiché au joueur.
+
+## Audio et stockage
+
+Les sons sont synthétisés avec la Web Audio API dans `js/script.js`. Aucun
+fichier audio n'est nécessaire pour jouer.
+
+Le compteur de tentatives et de rejets est conservé dans `localStorage` sous la
+clé `distributeur.v1`.
+
+## Arborescence utile
+
+```text
+index.html                 Page principale et jeu
+information.html           Page d'information du film
+css/style.css              Styles du jeu principal
+css/information.css        Styles de la page d'information
+js/script.js               Logique du jeu, jugement et sons
+data/potin.json            Dictionnaire et règles du jugement
+files/affiche.png          Affiche de LE DISTRIBUTEUR
+files/bande-annonce.mp4    Bande-annonce du film
+assets/img/                Produits et éléments graphiques de la machine
+assets/sounds/             Documentation des sons optionnels
+fonts/                     Polices locales du projet
+```
+
+Le projet fonctionne sans framework, backend ou dépendance JavaScript. Les
+Google Fonts sont utilisées par la page principale avec des polices de repli.

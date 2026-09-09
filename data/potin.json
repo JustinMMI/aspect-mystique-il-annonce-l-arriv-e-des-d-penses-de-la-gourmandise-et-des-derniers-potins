@@ -1,0 +1,62 @@
+{
+  "jugement": {
+    "racines": [
+      "tromp", "cocu", "infidel", "trahi", "poucav", "cafard", "balance", "dossier", "nude",
+      "embrass", "largu", "plaqu", "quitt", "amoureu", "dragu", "flirt", "crush", "ruptur", "rompu",
+      "celibat", "pecho", "chopp", "bais", "cuch", "kiff", "galoch", "menti", "menteur", "mensonge",
+      "mytho", "cach", "avou", "jure", "secret", "chuchot", "rumeur", "parait", "scandal", "surpris",
+      "jalou", "argent", "dette", "fauch", "rembours", "vole", "arnaqu", "piqu", "rachet", "engueul",
+      "bagarre", "clash", "insult", "harcel", "menac", "frapp", "gifl", "embrouill", "malaise", "honte",
+      "genan", "ridicul", "trich", "copi", "vire", "renvoy", "exclu", "redoubl", "convoqu", "surveillant",
+      "prof", "note", "exam", "sech", "ivre", "bourr", "vomi", "pleur", "demission", "licenci", "grossesse",
+      "enceinte", "soiree", "fete", "alcool", "story", "insta", "snap", "captur", "screen", "supprim", "bloqu",
+      "ghost", "photo", "video"
+    ],
+    "motsExacts": ["ex", "vol", "nue", "nu"],
+    "expressions": [
+      "sort avec", "sortent ensemble", "vu avec", "en cachette", "dans le dos", "personne ne sait",
+      "jure de ne rien dire", "il parait que", "on m a dit", "tout le monde le sait", "s est fait",
+      "a couché", "coup de", "sous le nez"
+    ],
+    "phrasesBidons": ["rien", "sais pas", "aucune idée", "je sais pas", "chépa", "chais pas", "bonjour", "test"],
+    "motsExclus": ["ET", "LA", "LE", "LES", "UN", "UNE", "DES", "PAR", "SUR", "DANS", "AVEC", "POUR", "MAIS"],
+    "regles": {
+      "motsMinimum": 3,
+      "motsMaximumPourPhraseBidon": 6,
+      "pointsParCorrespondance": 2,
+      "pointsMaximumMotsCles": 6,
+      "pointsNomPropre": 2,
+      "motsPourPremierBonusLongueur": 6,
+      "pointsPremierBonusLongueur": 1,
+      "motsPourSecondBonusLongueur": 12,
+      "pointsSecondBonusLongueur": 1
+    }
+  },
+  "repliquesRejet": [
+    "C'est tout ? Mes capteurs s'ennuient.",
+    "Pathétique. Recommence.",
+    "Je connais déjà ça, humain.",
+    "Pas assez croustillant. Au suivant.",
+    "Tu appelles ça un potin ?",
+    "Insuffisant. Réessaie, si tu oses."
+  ],
+  "repliquesAcceptation": [
+    "...Intéressant. Entre.",
+    "Voilà enfin quelque chose digne de mon attention.",
+    "Ça, c'est un vrai potin. Bienvenue."
+  ],
+  "paliers": [
+    { "ticker": "...ANALYSE EN COURS...", "code": "ANALYSE", "etat": "LECTURE" },
+    { "ticker": "RECOUPEMENT DES TÉMOINS", "code": "RECOUP.", "etat": "CROISEMENT" },
+    { "ticker": "MESURE DU CROUSTILLANT", "code": "CRUST.", "etat": "PESÉE" }
+  ],
+  "marmonnements": [
+    "je crois que j'ai déjà entendu ça.",
+    "...tu transpires, humain.",
+    "attends. redis-moi ce nom.",
+    "mes archives se souviennent de toi.",
+    "ne bouge pas. je regarde.",
+    "quelqu'un va souffrir de ça."
+  ],
+  "motsScare": ["RECALÉ", "REFUSÉ", "NON", "MENSONGE", "DÉGAGE"]
+}

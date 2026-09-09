@@ -487,53 +487,25 @@ function clearDialogue() {
 /* ============================================================
    5. DICTIONNAIRE & JUGEMENT DU POTIN
    ============================================================ */
-const racines = [
-  "tromp", "cocu", "infidel", "trahi", "poucav", "cafard", "balance", "dossier", "nude",
-  "embrass", "largu", "plaqu", "quitt", "amoureu", "dragu", "flirt",
-  "crush", "ruptur", "rompu", "celibat", "pecho", "chopp", "bais", "cuch", "kiff", "galoch",
-  "menti", "menteur", "mensonge", "mytho", "cach", "avou", "jure",
-  "secret", "chuchot", "rumeur", "parait", "scandal", "surpris", "jalou",
-  "argent", "dette", "fauch", "rembours", "vole", "arnaqu", "piqu", "rachet",
-  "engueul", "bagarre", "clash", "insult", "harcel", "menac", "frapp", "gifl",
-  "embrouill", "malaise", "honte", "genan", "ridicul",
-  "trich", "copi", "vire", "renvoy", "exclu", "redoubl", "convoqu", "surveillant", "prof", "note", "exam", "sech",
-  "ivre", "bourr", "vomi", "pleur", "demission", "licenci", "grossesse", "enceinte", "soiree", "fete", "alcool",
-  "story", "insta", "snap", "captur", "screen", "supprim", "bloqu", "ghost", "photo", "video",
-];
-const motsExacts = ["ex", "vol", "nue", "nu"];
-const expressions = [
-  "sort avec", "sortent ensemble", "vu avec", "en cachette", "dans le dos",
-  "personne ne sait", "juré de ne rien dire", "il parait que", "on m a dit",
-  "tout le monde le sait", "s est fait", "a couché", "coup de", "sous le nez",
-];
-const phrasesBidons = ["rien", "sais pas", "aucune idée", "je sais pas", "chépa", "chais pas", "bonjour", "test"];
-const repliquesRejet = [
-  "C'est tout ? Mes capteurs s'ennuient.",
-  "Pathétique. Recommence.",
-  "Je connais déjà ça, humain.",
-  "Pas assez croustillant. Au suivant.",
-  "Tu appelles ça un potin ?",
-  "Insuffisant. Réessaie, si tu oses.",
-];
-const repliquesAcceptation = [
-  "...Intéressant. Entre.",
-  "Voilà enfin quelque chose digne de mon attention.",
-  "Ça, c'est un vrai potin. Bienvenue.",
-];
-const paliers = [
-  { ticker: "...ANALYSE EN COURS...",    code: "ANALYSE", etat: "LECTURE" },
-  { ticker: "RECOUPEMENT DES TÉMOINS",   code: "RECOUP.", etat: "CROISEMENT" },
-  { ticker: "MESURE DU CROUSTILLANT",    code: "CRUST.",  etat: "PESÉE" },
-];
-const marmonnements = [
-  "je crois que j'ai déjà entendu ça.",
-  "...tu transpires, humain.",
-  "attends. redis-moi ce nom.",
-  "mes archives se souviennent de toi.",
-  "ne bouge pas. je regarde.",
-  "quelqu'un va souffrir de ça.",
-];
-const motsScare = ["RECALÉ", "REFUSÉ", "NON", "MENSONGE", "DÉGAGE"];
+let racines = [];
+let motsExacts = [];
+let expressions = [];
+let phrasesBidons = [];
+let motsExclus = [];
+let reglesJugement = {};
+let repliquesRejet = [];
+let repliquesAcceptation = [];
+let paliers = [];
+let marmonnements = [];
+let motsScare = [];
+
+async function chargerDonnees() {
+  const response = await fetch("data/potin.json");
+  if (!response.ok) throw new Error("Impossible de charger data/potin.json");
+  const donnees = await response.json();
+  ({ racines, motsExacts, expressions, phrasesBidons, motsExclus, regles: reglesJugement } = donnees.jugement);
+  ({ repliquesRejet, repliquesAcceptation, paliers, marmonnements, motsScare } = donnees);
+}
 
 const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 const escapeRe  = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -548,8 +520,8 @@ function juger(texte) {
   const mots = brut.split(/\s+/).filter(Boolean);
   const norm = normalize(brut);
 
-  if (mots.length < 3) return { accepte: false, raison: "court" };
-  if (mots.length <= 6) {
+  if (mots.length < reglesJugement.motsMinimum) return { accepte: false, raison: "court" };
+  if (mots.length <= reglesJugement.motsMaximumPourPhraseBidon) {
     for (const bidon of phrasesBidons) {
       if (norm.includes(normalize(bidon))) return { accepte: false, raison: "bidon" };
     }
@@ -560,18 +532,24 @@ function juger(texte) {
   for (const r of racines)     if (testRacine(norm, normalize(r))) trouves.add(r);
   for (const m of motsExacts)  if (testExact(norm, normalize(m)))  trouves.add(m);
   for (const e of expressions) if (norm.includes(normalize(e)))    trouves.add(e);
-  score += Math.min(trouves.size * 2, 6);
+  score += Math.min(
+    trouves.size * reglesJugement.pointsParCorrespondance,
+    reglesJugement.pointsMaximumMotsCles,
+  );
 
-  const motsExclus = ["ET", "LA", "LE", "LES", "UN", "UNE", "DES", "PAR", "SUR", "DANS", "AVEC", "POUR", "MAIS"];
   const nomPropre = mots.slice(1).some((m) => {
     const w = m.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, "");
     if (w.length <= 1 || motsExclus.includes(w)) return false;
     return /^[A-ZÀ-ÖØ-Þ][a-zà-öø-ÿ'’-]+$/.test(w) || /^[A-ZÀ-ÖØ-Þ]{2,}$/.test(w);
   });
-  if (nomPropre) score += 2;
+  if (nomPropre) score += reglesJugement.pointsNomPropre;
 
-  if (mots.length > 6)  score += 1;
-  if (mots.length > 12) score += 1;
+  if (mots.length > reglesJugement.motsPourPremierBonusLongueur) {
+    score += reglesJugement.pointsPremierBonusLongueur;
+  }
+  if (mots.length > reglesJugement.motsPourSecondBonusLongueur) {
+    score += reglesJugement.pointsSecondBonusLongueur;
+  }
 
   return { accepte: score >= partie.seuil, score, raison: "score" };
 }
@@ -940,7 +918,16 @@ function buildParadise() {
 /* ============================================================
    10. ÉVÉNEMENTS & INITIALISATION
    ============================================================ */
+const donneesPromise = chargerDonnees();
+
 el.powerBtn.addEventListener("click", async () => {
+  try {
+    await donneesPromise;
+  } catch (error) {
+    el.powergate.querySelector(".powergate__hint").textContent = "LANCEZ LE PROJET AVEC UN SERVEUR LOCAL";
+    console.error(error);
+    return;
+  }
   await Audio_.unlock();
   el.powergate.classList.add("off");
   EyesAndParallax.start();
