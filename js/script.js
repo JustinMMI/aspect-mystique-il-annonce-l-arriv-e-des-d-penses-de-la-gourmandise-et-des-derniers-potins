@@ -968,7 +968,7 @@ $$(".pad button").forEach((btn) => {
 
 
 const indices = [
-  "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées !",
+  "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées ! Nous ne prenons pas les listes de mots vagues sans aucun sens.",
   "💡 CONSEIL DE SURVIE #2 :\nUtilisez des mots-clés comme 'sort avec', 'trompé', 'secret', 'avoué', 'dossier', 'rupture', 'soirée' ou 'rumeur'.",
   "💡 CONSEIL DE SURVIE #3 :\nExemple valide : 'Lucas sort avec Chloé en cachette depuis la soirée de vendredi.'",
   "💡 CONSEIL DE SURVIE #4 :\nAjouter un nom propre (ex: Thomas, Sarah, M. Dupont) augmente grandement votre score auprès du distributeur.",
