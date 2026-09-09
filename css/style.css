@@ -26,6 +26,7 @@
 /* Information page */
 .information-page {
 	margin: 0;
+	overflow-x: hidden;
 	background: #0b0b0b;
 	color: #f3f1ec;
 	font-family: "Courier New", monospace;
@@ -90,13 +91,13 @@
 .information-hero {
 	display: grid;
 	max-width: 1240px;
-	min-height: 680px;
+	min-height: 590px;
 	box-sizing: border-box;
 	grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.8fr);
 	align-items: center;
 	gap: clamp(48px, 9vw, 140px);
 	margin: 0 auto;
-	padding: 96px clamp(20px, 6vw, 96px);
+	padding: 76px clamp(20px, 6vw, 96px);
 	background: radial-gradient(circle at 15% 50%, #252525 0, #0b0b0b 38%);
 }
 
@@ -114,7 +115,7 @@
 	max-width: 650px;
 	margin: 0;
 	font-family: Georgia, serif;
-	font-size: clamp(3.5rem, 8vw, 7.5rem);
+	font-size: clamp(3.2rem, 7vw, 6rem);
 	font-weight: normal;
 	line-height: 0.88;
 	letter-spacing: -0.04em;
@@ -127,9 +128,9 @@
 
 .hero-intro {
 	max-width: 430px;
-	margin: 40px 0 28px;
+	margin: 32px 0 24px;
 	color: #bababa;
-	font-size: 0.9rem;
+	font-size: 0.82rem;
 	line-height: 1.8;
 }
 
@@ -199,6 +200,56 @@
 	font-size: 1.2rem;
 }
 
+.trailer-section {
+	display: grid;
+	max-width: 1100px;
+	grid-template-columns: minmax(210px, 0.45fr) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(32px, 7vw, 100px);
+	margin: 0 auto;
+	padding: 88px clamp(20px, 8vw, 140px);
+	background: #111;
+}
+
+.trailer-heading h2 {
+	margin: 0;
+	font-family: Georgia, serif;
+	font-size: clamp(2rem, 4vw, 4rem);
+	font-weight: normal;
+	line-height: 0.95;
+}
+
+.trailer-heading > p:last-child {
+	margin: 24px 0 0;
+	color: #919191;
+	font-size: 0.75rem;
+	line-height: 1.7;
+}
+
+.trailer-frame {
+	position: relative;
+	padding: 10px 10px 28px;
+	border: 1px solid #363636;
+	background: #050505;
+	box-shadow: 8px 8px 0 #e90036;
+}
+
+.trailer-frame video {
+	display: block;
+	width: 100%;
+	max-height: 560px;
+	background: #000;
+}
+
+.trailer-label {
+	position: absolute;
+	right: 14px;
+	bottom: 8px;
+	color: #e90036;
+	font-size: 0.58rem;
+	letter-spacing: 0.12em;
+}
+
 .dossier-section {
 	padding: 90px clamp(20px, 8vw, 140px);
 	background: #eeeDE8;
@@ -213,16 +264,16 @@
 .section-heading {
 	display: flex;
 	align-items: baseline;
-	gap: 24px;
+	gap: 18px;
 	max-width: 1100px;
-	margin: 0 auto 48px;
+	margin: 0 auto 36px;
 	border-bottom: 1px solid currentColor;
 }
 
 .section-heading h2 {
-	margin: 0 0 14px;
+	margin: 0 0 12px;
 	font-family: Georgia, serif;
-	font-size: clamp(2.4rem, 5vw, 5rem);
+	font-size: clamp(2rem, 4vw, 3.75rem);
 	font-weight: normal;
 }
 
@@ -235,14 +286,14 @@
 
 .dossier-grid {
 	grid-template-columns: 1.3fr 0.7fr;
-	gap: 80px;
+	gap: 64px;
 }
 
 .lead-copy {
 	max-width: 650px;
 	margin: 0;
 	font-family: Georgia, serif;
-	font-size: clamp(1.5rem, 3vw, 2.5rem);
+	font-size: clamp(1.3rem, 2.4vw, 2rem);
 	line-height: 1.25;
 }
 
@@ -280,9 +331,9 @@
 }
 
 .credit-card h3 {
-	margin: 50px 0 18px;
+	margin: 38px 0 16px;
 	font-family: Georgia, serif;
-	font-size: 1.6rem;
+	font-size: 1.35rem;
 	font-weight: normal;
 }
 
@@ -293,13 +344,113 @@
 	line-height: 1.7;
 }
 
+.community-section,
+.faq-section {
+	padding: 90px clamp(20px, 8vw, 140px);
+	background: #e8e6df;
+	color: #101010;
+}
+
+.reviews-grid {
+	display: grid;
+	max-width: 1100px;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 14px;
+	margin: 0 auto;
+}
+
+.review-card {
+	position: relative;
+	min-height: 130px;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 28px 26px 26px 42px;
+	border: 1px solid #c4c1b9;
+	background: #f4f2ed;
+	font-family: Georgia, serif;
+	font-size: 0.88rem;
+	line-height: 1.55;
+}
+
+.review-card::before {
+	position: absolute;
+	top: 22px;
+	left: 20px;
+	color: #e90036;
+	content: "//";
+	font-family: "Courier New", monospace;
+	font-size: 0.7rem;
+	font-weight: bold;
+}
+
+.review-card-rating span {
+	display: block;
+	margin-top: 14px;
+	color: #e90036;
+	font-family: "Courier New", monospace;
+	font-size: 0.9rem;
+	letter-spacing: 0.1em;
+}
+
+.faq-section {
+	padding-top: 90px;
+	background: #111;
+	color: #f3f1ec;
+}
+
+.faq-list {
+	max-width: 1100px;
+	margin: 0 auto;
+	border-top: 1px solid #444;
+}
+
+.faq-list details {
+	border-bottom: 1px solid #444;
+}
+
+.faq-list summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	padding: 24px 0;
+	color: #f3f1ec;
+	cursor: pointer;
+	font-family: Georgia, serif;
+	font-size: clamp(1.1rem, 2vw, 1.65rem);
+	list-style: none;
+}
+
+.faq-list summary::-webkit-details-marker {
+	display: none;
+}
+
+.faq-list summary::after {
+	color: #e90036;
+	content: "+";
+	font-family: "Courier New", monospace;
+	font-size: 1.5rem;
+}
+
+.faq-list details[open] summary::after {
+	content: "-";
+}
+
+.faq-list details p {
+	max-width: 720px;
+	margin: 0 50px 24px 0;
+	color: #a4a4a4;
+	font-size: 0.85rem;
+	line-height: 1.7;
+}
+
 .site-footer {
 	display: flex;
 	justify-content: space-between;
 	padding: 28px clamp(20px, 8vw, 140px);
 	background: #050505;
 	color: #666;
-	font-size: 0.6rem;
+	font-size: 0.62rem;
 	letter-spacing: 0.12em;
 }
 
@@ -336,6 +487,12 @@
 		width: min(100%, 390px);
 	}
 
+	.trailer-section {
+		grid-template-columns: 1fr;
+		padding-top: 64px;
+		padding-bottom: 72px;
+	}
+
 	.dossier-section {
 		padding-top: 64px;
 		padding-bottom: 64px;
@@ -349,6 +506,16 @@
 
 	.credits-grid {
 		gap: 14px;
+	}
+
+	.reviews-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.community-section,
+	.faq-section {
+		padding-top: 64px;
+		padding-bottom: 64px;
 	}
 
 	.credit-card {
