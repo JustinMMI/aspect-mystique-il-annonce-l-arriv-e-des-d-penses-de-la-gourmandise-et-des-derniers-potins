@@ -1,12 +1,7 @@
-/* =================================================================
-   LE DISTRIBUTEUR — Direction Artistique : BIO-MÉCANIQUE & CYBER-HORREUR
-   Concept : L'alliance d'un chassîs industriel noir mat, de sutures de cuir,
-   de veines organiques sous la tôle, d'une bouche vivante et d'yeux biologiques
-   encastrés dans la matière (Inspiration Cronenberg / Alien / Horror Indie).
-   ================================================================= */
+
 
 :root {
-  /* Palette Bio-Mécanique & Cyber-Horreur */
+  
   --fond-abyssal:   #040406;
   --chair-sombre:   #180a0a;
   --chair-veine:    #4a0d0d;
@@ -15,7 +10,7 @@
   --acier-brosse:   #2e3542;
   --acier-bord:     #454f60;
   
-  /* Luminescences Organiques & Cathodiques */
+  
   --vert-bio:       #39ff14;
   --vert-fond:      #031707;
   --ambre-toxique:  #ff9900;
@@ -23,7 +18,7 @@
   --rouge-sang:     #800b0b;
   --creme-os:       #dcd5c7;
 
-  /* Typographies */
+  
   --f-titre:    "Creepster", "Impact", fantasy;
   --f-terminal: "VT323", monospace;
   --f-mono:     "Share Tech Mono", monospace;
@@ -53,9 +48,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
 }
 
-/* =================================================================
-   2. EFFETS D'AMBIANCE VHS & BIOLOGIQUE
-   ================================================================= */
+
 .fx { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
 
 .fx--scanlines {
@@ -114,9 +107,7 @@ body.is-on .scene { animation: neonGlitch 7s infinite; }
   72% { opacity: 1; } 72.4% { opacity: 0.65; } 72.8% { opacity: 0.95; }
 }
 
-/* =================================================================
-   3. ÉCRAN D'ALLUMAGE (Déclencheur Organique)
-   ================================================================= */
+
 .powergate {
   position: fixed; inset: 0; z-index: 80;
   display: grid; place-content: center; justify-items: center; gap: 1.5rem;
@@ -153,9 +144,7 @@ body.is-on .scene { animation: neonGlitch 7s infinite; }
   color: #4b5246; margin: 0;
 }
 
-/* =================================================================
-   4. LE COULOIR (Décor Sombre & Brut)
-   ================================================================= */
+
 .scene {
   position: fixed; inset: 0; overflow: hidden;
   background: radial-gradient(75% 65% at 50% 32%, #140d0d 0%, #0a0606 50%, #030203 100%);
@@ -314,9 +303,7 @@ body.rush .scene {
 }
 .counter b { color: var(--rouge-visceral); font-weight: 400; }
 
-/* =================================================================
-   5. LE DISTRIBUTEUR (Bio-Mécanique, Métal Noir & Cuir Stitché)
-   ================================================================= */
+
 .vm {
   position: absolute; left: 50%; transform: translateX(-50%);
   bottom: calc(var(--dlg-h) + 1vh);
@@ -338,13 +325,13 @@ body.rush .scene {
     0 0 60px rgba(160, 20, 20, 0.35);
 }
 
-/* Texture de cuir / tôle martelée */
+
 .vm::after {
   content: ""; position: absolute; inset: 0; border-radius: 8px 8px 2px 2px;
   background-image: var(--grain); opacity: 0.2; mix-blend-mode: overlay; pointer-events: none;
 }
 
-/* Veines organiques sous la peau métallisée */
+
 .vm::before {
   content: ""; position: absolute; inset: 0; z-index: 7; pointer-events: none;
   border-radius: 8px 8px 2px 2px;
@@ -361,7 +348,7 @@ body.tense-2 .vm { animation-duration: 0.06s; }
 body.tense-3 .vm { animation-duration: 0.04s; }
 @keyframes bioTremble { to { transform: translateX(calc(-50% + 1.5px)) translateY(-1px); } }
 
-/* --- Fronton du distributeur (Cadre Métallique Stitché & Enseigne Red) --- */
+
 .vm__marquee {
   position: relative; overflow: hidden;
   padding: 0.5rem 0.6rem 0.4rem; border-radius: 5px 5px 2px 2px; text-align: center;
@@ -391,7 +378,7 @@ body.is-on .lamp-led--red { background: var(--rouge-visceral); box-shadow: 0 0 8
 body.is-on .lamp-led--amber { background: #b87c18; opacity: 0.5; }
 .lamp-led--green.on { background: var(--vert-bio); box-shadow: 0 0 10px var(--vert-bio); }
 
-/* --- Bandeau d'analyse (Matrice LCD Émeraude Toxique) --- */
+
 .ticker {
   position: relative; overflow: hidden;
   padding: 6px 8px; border-radius: 3px;
@@ -412,13 +399,13 @@ body.is-on .lamp-led--amber { background: #b87c18; opacity: 0.5; }
   background: repeating-linear-gradient(0deg, rgba(0,0,0,0.38) 0 1px, transparent 1px 2px);
 }
 
-/* Jauge d'analyse */
+
 .jauge { display: flex; gap: 2px; height: 8px; }
 .jauge i { flex: 1; border-radius: 1px; background: #061408; border: 1px solid #030a04; }
 .jauge i.on { background: linear-gradient(180deg, #ffd055, #e66808); box-shadow: 0 0 6px rgba(230, 110, 10, 0.8); }
 .jauge i.rouge.on { background: linear-gradient(180deg, #ff6555, #b01005); box-shadow: 0 0 7px rgba(230, 30, 10, 0.9); }
 
-/* --- Vitrine des Snacks & Cadre Biorisque --- */
+
 .vm__body { display: grid; grid-template-columns: minmax(0, 1fr) 32%; gap: 6px; min-height: 0; }
 
 .glass {
@@ -449,7 +436,7 @@ body.is-on .lamp-led--amber { background: #b87c18; opacity: 0.5; }
   box-shadow: 0 0 14px 3px rgba(190, 240, 200, 0.8);
 }
 
-/* Les 3 Yeux SVG de la Machine Encastrés */
+
 .eyes { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .eye { position: absolute; filter: drop-shadow(0 0 14px rgba(160, 15, 15, 0.65)); }
 .eye svg { display: block; width: 100%; height: auto; }
@@ -473,7 +460,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
 @keyframes eyeIris { 50% { transform: scale(1.08); } }
 .eyes.lunge .eye--main { transform: scale(1.5); transition: transform 0.15s ease-out; }
 
-/* Coulures Sanglantes & Fêlures */
+
 .coulure {
   position: absolute; top: 0; z-index: 9; width: 3px; opacity: 0.6; pointer-events: none;
   background: linear-gradient(180deg, #2b0404, #661010 65%, #380606); border-radius: 0 0 2px 2px;
@@ -481,7 +468,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
 .felure { position: absolute; inset: 0; z-index: 10; pointer-events: none; opacity: 0.42; }
 .felure path { fill: none; stroke: #fff; stroke-width: 1; }
 
-/* Rayons & Produits avec Spirales Métalliques */
+
 .shelf { position: relative; z-index: 1; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 0 4px; }
 .shelf__items { display: flex; align-items: flex-end; justify-content: space-around; height: 100%; gap: 2%; padding-bottom: 2px; min-height: 0; }
 .shelf__coils {
@@ -512,7 +499,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
 .shelf--a .p { height: 80%; } .shelf--b .p { height: 66%; } .shelf--c .p { height: 68%; } .shelf--d .p { height: 84%; }
 .p--court { height: 44% !important; }
 
-/* --- Colonne de commande (Panneau Métallique Physique) --- */
+
 .ctrl {
   display: grid; grid-template-rows: auto auto auto 1fr auto;
   gap: 4px; padding: 6px 5px;
@@ -539,7 +526,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
   font-size: 0.34rem; letter-spacing: 0.12em; color: #225c2b; white-space: nowrap;
 }
 
-/* Clavier Pavé Tactile Métallique */
+
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
 .pad button {
   all: unset; box-sizing: border-box;
@@ -583,7 +570,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
 .change__cup { width: 68%; height: 12px; border-radius: 0 0 6px 6px; background: #000; box-shadow: inset 0 4px 6px #000; }
 .change small { font-family: var(--f-mono); font-size: 0.28rem; letter-spacing: 0.1em; color: #4e545e; }
 
-/* Evadés */
+
 .evade { position: absolute; pointer-events: none; z-index: 9; filter: contrast(1.05) drop-shadow(0 4px 8px rgba(0,0,0,0.85)); }
 .evade--trappe { width: 32%; left: 4%; bottom: 5%; animation: onduler 6s ease-in-out infinite alternate; }
 .evade--monnaie { width: 48%; left: 22%; bottom: -2%; animation: onduler 5s ease-in-out infinite alternate; }
@@ -591,7 +578,7 @@ body.is-on .lid--top, body.is-on .lid--bot { transform: translateY(0); }
 @keyframes onduler { from { transform: rotate(-2deg); } to { transform: rotate(2deg); } }
 @keyframes ondulerFlanc { from { transform: rotate(10deg) scaleX(-1); } to { transform: rotate(16deg) scaleX(-1); } }
 
-/* Fente d'insertion du potin */
+
 .mouth { display: grid; gap: 2px; justify-items: center; }
 .mouth__label { font-family: var(--f-mono); font-size: 0.38rem; letter-spacing: 0.2em; color: #5b5c66; }
 .mouth__slit {
@@ -633,9 +620,7 @@ body.tense .mouth__slit {
 .sticker b { display: block; font-weight: 400; }
 .sticker u { display: block; height: 5px; margin-top: 2px; text-decoration: none; background: repeating-linear-gradient(90deg, #222 0 1px, transparent 1px 2px, #222 2px 4px); }
 
-/* =================================================================
-   6. BOÎTE DE DIALOGUE (Terminal Intégré au Bas de l'Écran)
-   ================================================================= */
+
 .dialogue {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
   padding: clamp(0.4rem, 1.4vw, 0.8rem);
@@ -729,9 +714,7 @@ body.tense .dialogue__box {
 .btn--feed:hover:not(:disabled) { color: #fff; border-color: var(--rouge-visceral); box-shadow: 0 2px 0 #07080b, 0 0 16px rgba(230, 28, 28, 0.45); }
 .btn--ghost { background: transparent; margin-top: 0.5rem; }
 
-/* =================================================================
-   7. JUMP SCARE & IRIS
-   ================================================================= */
+
 .scare {
   position: fixed; inset: 0; z-index: 72; display: grid; place-items: center; pointer-events: none;
   background: radial-gradient(circle at 50% 50%, rgba(85, 0, 0, 0.38), rgba(0, 0, 0, 0.78));
@@ -753,9 +736,7 @@ body.tense .dialogue__box {
 @keyframes irisOpen { from { width: 0; height: 0; } to { width: 300vmax; height: 300vmax; } }
 @keyframes irisClose { from { width: 300vmax; height: 300vmax; } to { width: 0; height: 0; } }
 
-/* =================================================================
-   8. LE PARADIS (Tableau Céleste Baroque, Or & Lumière Divine)
-   ================================================================= */
+
 :root {
   --or-fond-1: #fce8a4;
   --or-fond-2: #e8b243;
@@ -778,7 +759,7 @@ body.tense .dialogue__box {
 body.in-paradise .fx--scanlines, body.in-paradise .fx--grain, body.in-paradise .fx--vignette { opacity: 0; transition: opacity 0.8s; }
 body.in-paradise { cursor: default; }
 
-/* Soleils et rayons célestes rotatifs */
+
 .par__sun {
   position: absolute; top: -25vmin; left: 50%; transform: translateX(-50%);
   width: 75vmin; height: 75vmin; border-radius: 50%;
@@ -816,7 +797,7 @@ body.in-paradise { cursor: default; }
 }
 @keyframes cloudDrift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
 
-/* Étincelles dorées célestes */
+
 .sparkle {
   position: absolute; border-radius: 50%; background: #fff;
   box-shadow: 0 0 12px #ffe680, 0 0 24px #ffd700;
@@ -824,7 +805,7 @@ body.in-paradise { cursor: default; }
 }
 @keyframes sparkleFlicker { 0% { transform: scale(0.3); opacity: 0.2; } 100% { transform: scale(1.4); opacity: 1; } }
 
-/* Pièces de monnaie 3D dorées et étincelantes */
+
 .coin {
   position: absolute; top: -8vh; width: 20px; height: 20px; border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fff2a3 25%, #f5b818 60%, #9e6d08 100%);
@@ -844,7 +825,7 @@ body.in-paradise { cursor: default; }
   100% { transform: translateY(112vh) rotateY(1080deg) rotateZ(360deg); opacity: 0; }
 }
 
-/* Festin Baroque Royal */
+
 .buffet {
   z-index: 2; position: absolute; left: 50%; bottom: 15vh; transform: translateX(-50%);
   width: min(760px, 86vw); animation: buffetRise 1.4s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -923,7 +904,7 @@ body.in-paradise { cursor: default; }
 .group--far { z-index: 1; transform-origin: bottom center; filter: blur(0.5px); opacity: 0.5; }
 .group--4 { left: 24%; bottom: 15vh; } .group--5 { right: 24%; bottom: 18vh; }
 
-/* Typographie d'or resplendissante */
+
 .par__text { z-index: 4; position: absolute; left: 50%; top: 10vh; transform: translateX(-50%); width: min(720px, 88vw); text-align: center; }
 
 .par__quote {
@@ -965,9 +946,7 @@ body.in-paradise { cursor: default; }
   box-shadow: 0 8px 25px rgba(212, 147, 21, 0.45), inset 0 1px 0 #fff;
 }
 
-/* =================================================================
-   9. RESPONSIVE DESIGN
-   ================================================================= */
+
 @media (max-width: 900px) {
   .poster, .exit { display: none; }
   .vm__body { grid-template-columns: minmax(0, 1fr) 33%; }

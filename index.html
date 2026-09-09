@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style-v2.css">
+<link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23070709'/><ellipse cx='16' cy='16' rx='13' ry='8' fill='%23dfd8ca'/><circle cx='16' cy='16' r='6' fill='%239e1b1b'/><circle cx='16' cy='16' r='2.6' fill='%23000'/></svg>">
 </head>
 <body class="is-off">
@@ -65,7 +65,7 @@
         }
     </style>
 
-<!-- CALQUES D'AMBIANCE VHS / CRT -->
+
 <div class="fx fx--scanlines" aria-hidden="true"></div>
 <div class="fx fx--grain" aria-hidden="true"></div>
 <div class="fx fx--vignette" aria-hidden="true"></div>
@@ -74,7 +74,7 @@
 <div class="iris" id="iris" aria-hidden="true"><span class="iris__hole"></span></div>
 <div class="scare" id="scare" hidden aria-hidden="true"><p class="scare__word" id="scareWord"></p></div>
 
-<!-- ÉCRAN D'ALLUMAGE -->
+
 <div class="powergate" id="powergate">
   <button class="powergate__btn" id="powerBtn" type="button">
     <span class="powergate__ring"></span>
@@ -83,7 +83,7 @@
   <p class="powergate__hint">— le son est vivement conseillé —</p>
 </div>
 
-<!-- LE COULOIR D'ÉCOLE -->
+
 <main class="scene" id="scene">
 
   <div class="wall" aria-hidden="true">
@@ -102,13 +102,13 @@
   <div class="floor" aria-hidden="true"><span class="floor__grid"></span></div>
   <div class="machine__pool" aria-hidden="true"></div>
 
-  <!-- Compteur de tentatives -->
+  
   <p class="counter" id="counter" hidden></p>
 
-  <!-- LA MACHINE ACIER -->
+  
   <div class="vm" id="machine">
 
-    <!-- Fronton -->
+    
     <header class="vm__marquee">
       <h1 class="vm__brand" id="brand">LE DISTRIBUTEUR</h1>
       <p class="vm__tag"><em>IL A FAIM</em> &middot; IL A DES YEUX &middot; 24H/24</p>
@@ -119,7 +119,7 @@
       </div>
     </header>
 
-    <!-- Matrice d'analyse LCD -->
+    
     <div class="ticker" aria-hidden="true"><span class="ticker__txt" id="tickerTxt">HORS LIGNE</span></div>
     <div class="jauge" id="jauge" aria-hidden="true">
       <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
@@ -128,13 +128,13 @@
 
     <div class="vm__body">
 
-      <!-- VITRINE -->
+      
       <section class="glass" id="glass">
         <div class="glass__inner">
 
           <div class="lightbar" aria-hidden="true"></div>
 
-          <!-- YEUX SVG -->
+          
           <div class="eyes" id="eyes" aria-hidden="true">
             <div class="eye eye--main" data-eye>
               <svg viewBox="0 0 200 120">
@@ -202,7 +202,7 @@
             </div>
           </div>
 
-          <!-- Coulures et fêlures -->
+          
           <span class="coulure" style="left:18%;height:26%" aria-hidden="true"></span>
           <span class="coulure" style="left:47%;height:44%;width:4px" aria-hidden="true"></span>
           <span class="coulure" style="left:78%;height:17%;width:6px" aria-hidden="true"></span>
@@ -212,7 +212,7 @@
             <path d="M86 0 L78 28 L90 52 L80 86"/>
           </svg>
 
-          <!-- Rangée A -->
+          
           <div class="shelf shelf--a">
             <div class="shelf__items">
               <span class="p">
@@ -244,7 +244,7 @@
             </div>
           </div>
 
-          <!-- Rangée B -->
+          
           <div class="shelf shelf--b">
             <div class="shelf__items">
               <span class="p">
@@ -276,7 +276,7 @@
             </div>
           </div>
 
-          <!-- Rangée C -->
+          
           <div class="shelf shelf--c">
             <div class="shelf__items">
               <span class="p">
@@ -307,7 +307,7 @@
             </div>
           </div>
 
-          <!-- Rangée D -->
+          
           <div class="shelf shelf--d">
             <div class="shelf__items">
               <span class="p">
@@ -341,7 +341,7 @@
         <div class="glass__glare" aria-hidden="true"></div>
       </section>
 
-      <!-- COLONNE DE COMMANDE -->
+      
       <aside class="ctrl" aria-hidden="true">
         <div class="screen">
           <b id="panelCode">--</b>
@@ -380,13 +380,13 @@
       </aside>
     </div>
 
-    <!-- Fente à potin -->
+    
     <div class="mouth" id="mouth" aria-hidden="true">
       <span class="mouth__label">INSÉREZ VOTRE POTIN</span>
       <span class="mouth__slit"></span>
     </div>
 
-    <!-- Trappe de retrait -->
+    
     <div class="vm__delivery" aria-hidden="true">
       <div class="flap"><span>NE PAS METTRE LA MAIN</span></div>
       <img class="evade evade--trappe" src="assets/img/tentacules.png" alt="">
@@ -401,7 +401,7 @@
   <div class="fog" aria-hidden="true"></div>
 </main>
 
-<!-- BOÎTE DE DIALOGUE (TERMINAL INTEGRÉ) -->
+
 <footer class="dialogue" id="dialogue">
   <div class="dialogue__box">
     <span class="dialogue__who" id="dlgWho">LE DISTRIBUTEUR</span>
@@ -421,7 +421,7 @@
   </div>
 </footer>
 
-<!-- LE PARADIS (DÉCOR BAROQUE & SURRÉALISTE RESSPLENDISSANT) -->
+
 <section class="paradise" id="paradise" hidden aria-hidden="true">
   <div class="par__sun"></div>
   <div class="par__rays" aria-hidden="true"></div>
@@ -475,6 +475,6 @@
 
 <a class="information-button" href="information.html" aria-label="En apprendre plus sur LE DISTRIBUTEUR">En apprendre plus sur LE DISTRIBUTEUR</a>
 
-<script src="script-v2.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
