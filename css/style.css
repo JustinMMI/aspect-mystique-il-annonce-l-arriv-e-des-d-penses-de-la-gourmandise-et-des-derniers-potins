@@ -946,9 +946,7 @@ body.in-paradise { cursor: default; }
   box-shadow: 0 8px 25px rgba(212, 147, 21, 0.45), inset 0 1px 0 #fff;
 }
 
-/* =================================================================
-   8.5. BOUTON & MODALE D'INDICE
-   ================================================================= */
+
 .hint-btn {
   position: fixed; top: 1.1rem; right: 1.1rem; z-index: 55;
   display: flex; align-items: center; gap: 0.45rem;
@@ -1004,9 +1002,7 @@ body.in-paradise { cursor: default; }
 }
 .btn--hint-next:hover { border-color: var(--vert-bio); box-shadow: 0 0 18px rgba(57, 255, 20, 0.4); }
 
-/* =================================================================
-   9. RESPONSIVE DESIGN
-   ================================================================= */
+
 @media (max-width: 900px) {
   .poster, .exit { display: none; }
   .vm__body { grid-template-columns: minmax(0, 1fr) 33%; }

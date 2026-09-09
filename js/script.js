@@ -922,9 +922,7 @@ $$(".pad button").forEach((btn) => {
   });
 });
 
-/* ============================================================
-   11. SYSTÈME D'INDICES & D'AIDE
-   ============================================================ */
+
 const indices = [
   "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées !",
   "💡 CONSEIL DE SURVIE #2 :\nUtilisez des mots-clés comme 'sort avec', 'trompé', 'secret', 'avoué', 'dossier', 'rupture', 'soirée' ou 'rumeur'.",

@@ -1,18 +1,8 @@
-/* =================================================================
-   LE DISTRIBUTEUR v2 — Logique & Moteur Interactif Ultime
-   - Moteur Audio Synthétique Web Audio étendu (moteur, pièces, démon, étincelles)
-   - Effet de Parallaxe 3D Atmosphérique à la souris
-   - Animation physique de rotation des spirales et chute des snacks
-   - Insertion de pièces et rendu de monnaie interactifs
-   - Mode Surdrive Démoniaque (Easter Egg 666) & Codes secrets
-   - Particules dorées interactives au Paradis
-   ================================================================= */
+
 (() => {
 "use strict";
 
-/* ============================================================
-   0. RACCOURCIS & ÉLÉMENTS DOM
-   ============================================================ */
+
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
 const rnd = (a, b) => Math.random() * (b - a) + a;
@@ -40,9 +30,7 @@ const el = {
 };
 const segments = [...el.jauge.children];
 
-/* ============================================================
-   1. MOTEUR AUDIO PROCÉDURAL WEB AUDIO API (100% Synthétisé)
-   ============================================================ */
+
 const Audio_ = (() => {
   let ctx = null, master = null, humNodes = null, noiseBuf = null;
 
@@ -151,13 +139,9 @@ const Audio_ = (() => {
     },
 
     clack(rate) { noise(.06, .06 + rate * .12, "bandpass", 280 + rate * 1400, 3.5); },
-
-    // Pulsation cardiaque double hyper-réaliste (systole & diastole) avec accélération et résonance
     heart(k = 0) {
       if (!ctx) return;
       const t = ctx.currentTime;
-      
-      // Systole (impact lourd sub-bass 90Hz -> 30Hz)
       const o1 = ctx.createOscillator(); o1.type = "sine";
       o1.frequency.setValueAtTime(95 + k * 35, t);
       o1.frequency.exponentialRampToValueAtTime(30, t + 0.16);
@@ -166,11 +150,7 @@ const Audio_ = (() => {
       g1.gain.exponentialRampToValueAtTime(0.4 + k * 0.25, t + 0.02);
       g1.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
       o1.connect(g1).connect(master); o1.start(t); o1.stop(t + 0.25);
-
-      // Clic vasculaire aigu (ouverture de valve)
       noise(0.03, 0.05 + k * 0.04, "highpass", 2400, 4);
-
-      // Diastole (second impact 100ms plus tard)
       const offset = Math.max(0.08, 0.12 - k * 0.03);
       const o2 = ctx.createOscillator(); o2.type = "sine";
       o2.frequency.setValueAtTime(75 + k * 28, t + offset);
@@ -210,13 +190,9 @@ const Audio_ = (() => {
     },
 
     static(dur = .3) { noise(dur, .32, "highpass", 750, 1.4); },
-
-    // SCREAMER ULTIME (5 Couches Synchronisées : Sub-Slam, FM-Screech, Grognement Bio, Bruit Métallique & Écho)
     screamer() {
       if (!ctx) return;
       const t = ctx.currentTime;
-
-      // Layer 1: Sub-bass shockwave impact (Impact colossal 180Hz -> 20Hz avec saturation WaveShaper)
       const sub = ctx.createOscillator(); sub.type = "sawtooth";
       sub.frequency.setValueAtTime(180, t);
       sub.frequency.exponentialRampToValueAtTime(20, t + 1.6);
@@ -230,8 +206,6 @@ const Audio_ = (() => {
       subG.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
       sub.connect(sh).connect(subG).connect(master);
       sub.start(t); sub.stop(t + 1.65);
-
-      // Layer 2: FM Stridence Aiguë (Screech monstrueux 2800Hz -> 150Hz modulé à 65Hz)
       const carrier = ctx.createOscillator(); carrier.type = "sawtooth";
       carrier.frequency.setValueAtTime(2800, t);
       carrier.frequency.exponentialRampToValueAtTime(150, t + 0.95);
@@ -247,8 +221,6 @@ const Audio_ = (() => {
       modulator.start(t); carrier.start(t);
       carrier.connect(screechG).connect(master);
       modulator.stop(t + 1.05); carrier.stop(t + 1.05);
-
-      // Layer 3: Grognement Viscéral (Filtre Bandpass balayant de 1600Hz à 60Hz)
       const growlOsc = ctx.createOscillator(); growlOsc.type = "sawtooth";
       growlOsc.frequency.setValueAtTime(120, t);
       growlOsc.frequency.linearRampToValueAtTime(45, t + 1.2);
@@ -262,12 +234,8 @@ const Audio_ = (() => {
       growlG.gain.exponentialRampToValueAtTime(0.001, t + 1.25);
       growlOsc.connect(growlF).connect(growlG).connect(master);
       growlOsc.start(t); growlOsc.stop(t + 1.3);
-
-      // Layer 4: Bruit d'explosion stridente & squelch mouillé
       noise(1.1, 0.45, "lowpass", 700, 2.5);
       noise(0.6, 0.35, "highpass", 2200, 3.5);
-
-      // Layer 5: Râle démoniaque d'écho sub
       setTimeout(() => {
         if (!ctx) return;
         const subEcho = ctx.createOscillator(); subEcho.type = "sine";
@@ -282,13 +250,9 @@ const Audio_ = (() => {
     },
 
     growl() { this.screamer(); },
-
-    // Son de défaite (Trappe métallique se fermant + impact lourd + bourdonnement mourant)
     defeatSound() {
       if (!ctx) return;
       const t = ctx.currentTime;
-      
-      // Slam métallique lourd
       const o = ctx.createOscillator(); o.type = "triangle";
       o.frequency.setValueAtTime(220, t);
       o.frequency.exponentialRampToValueAtTime(30, t + 0.4);
@@ -299,8 +263,6 @@ const Audio_ = (() => {
 
       noise(0.4, 0.4, "bandpass", 450, 4);
     },
-
-    // Bruitage mécanique de rotation des spirales
     motor(dur = 1.2) {
       if (!ctx) return;
       const t = ctx.currentTime;
@@ -347,8 +309,6 @@ const Audio_ = (() => {
       o.start(t); o.stop(t + 2.9);
       noise(2.8, 0.28, "lowpass", 450, 1.2);
     },
-
-    // Carillon céleste féerique d'accès au paradis (Accord C Maj 9th avec résonance scintillante)
     chime() {
       if (!ctx) return;
       const t = ctx.currentTime;
@@ -368,7 +328,6 @@ const Audio_ = (() => {
       if (!ctx) return null;
       const t = ctx.currentTime;
       const g = ctx.createGain(); g.gain.value = 0; g.connect(master);
-      // Nappe céleste majestueuse (C Maj 7 + Tremolo + Octaves Célestes)
       [130.81, 261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 1046.50].forEach((f, i) => {
         const o = ctx.createOscillator(); o.type = i % 2 === 0 ? "sine" : "triangle";
         o.frequency.value = f;
@@ -385,9 +344,7 @@ const Audio_ = (() => {
   };
 })();
 
-/* ============================================================
-   2. PARALLAXE 3D ATMOSPHÉRIQUE & YEUX
-   ============================================================ */
+
 const EyesAndParallax = (() => {
   const nodes = $$("[data-eye]");
   let blinkTimer = null, tracking = false, mx = window.innerWidth / 2, my = window.innerHeight / 2, raf = null;
@@ -404,7 +361,6 @@ const EyesAndParallax = (() => {
   }
 
   function loop() {
-    // Suivi du regard (sans aucune inclinaison 3D du couloir)
     nodes.forEach((n) => {
       const ball = n.querySelector(".eye__ball");
       if (!ball) return;
@@ -441,9 +397,7 @@ const EyesAndParallax = (() => {
   };
 })();
 
-/* ============================================================
-   3. BANDEAU DE LA MACHINE
-   ============================================================ */
+
 function ticker(texte, ton) {
   el.tickerTxt.textContent = texte;
   el.tickerTxt.className = "ticker__txt" + (ton ? " " + ton : "");
@@ -453,9 +407,7 @@ function jauge(p) {
   segments.forEach((s, i) => s.classList.toggle("on", i / n < p));
 }
 
-/* ============================================================
-   4. BOÎTE DE DIALOGUE AVEC MACHINE À ÉCRIRE
-   ============================================================ */
+
 let typing = 0;
 
 function speaker(who) {
@@ -484,9 +436,7 @@ function clearDialogue() {
   el.dlgStat.textContent = "";
 }
 
-/* ============================================================
-   5. DICTIONNAIRE & JUGEMENT DU POTIN
-   ============================================================ */
+
 let racines = [];
 let motsExacts = [];
 let expressions = [];
@@ -554,9 +504,7 @@ function juger(texte) {
   return { accepte: score >= partie.seuil, score, raison: "score" };
 }
 
-/* ============================================================
-   6. COMPTEUR & ÉTAT
-   ============================================================ */
+
 const KEY = "distributeur.v1";
 const stats = (() => {
   try {
@@ -595,9 +543,7 @@ function tension(niveau) {
   body.classList.toggle("tense-3", niveau >= 3);
 }
 
-/* ============================================================
-   7. ÉTATS DU JEU & EXPÉRIENCE INTERACTIVE
-   ============================================================ */
+
 async function boot() {
   setEtat("BOOT", "00", "DÉMARRAGE");
   partie.seuil = rndInt(3, 5);
@@ -805,13 +751,9 @@ async function recommencer() {
   boot();
 }
 
-/* ============================================================
-   8. INTERACTION PHYSIQUE DES SNACKS & PAVÉ NUMÉRIQUE
-   ============================================================ */
+
 function triggerSnackDrop(code) {
   Audio_.motor(1.2);
-  
-  // Animation de rotation de la spirale
   const rowLetter = code.charAt(0).toLowerCase();
   const shelf = $(`.shelf--${rowLetter}`);
   if (shelf) {
@@ -835,8 +777,6 @@ function handleKeypadClick(char) {
     current += char;
   }
   el.panelCode.textContent = current;
-
-  // Code secret 666 : Surdrive Démoniaque
   if (current === "666") {
     Audio_.demonic();
     Audio_.static(0.8);
@@ -847,16 +787,12 @@ function handleKeypadClick(char) {
     say("MON ÂME N'EST PAS À VENDRE POUR 6,66 €.", { speed: 30, cls: "angry" });
     return;
   }
-
-  // Distribution normale si code à 2 caractères (ex: A1, B3, C4)
   if (current.length === 2 && /^[A-D][1-5]$/.test(current)) {
     triggerSnackDrop(current);
   }
 }
 
-/* ============================================================
-   9. LE PARADIS (Nuages + Étincelles + Pièces Cliquables)
-   ============================================================ */
+
 function buildParadise() {
   el.parClouds.innerHTML = "";
   if (el.parSparkles) el.parSparkles.innerHTML = "";
@@ -901,8 +837,6 @@ function buildParadise() {
     c.style.left = rnd(0, 100).toFixed(2) + "vw";
     c.style.animationDuration = rnd(4.2, 10.5).toFixed(2) + "s";
     c.style.animationDelay = `-${rnd(0, 10.5).toFixed(2)}s`;
-    
-    // Pièces cliquables
     c.addEventListener("pointerdown", () => {
       Audio_.coinDrop();
       c.style.transform = "scale(2.2) rotateY(360deg)";
@@ -915,9 +849,7 @@ function buildParadise() {
   el.parCoins.appendChild(pieces);
 }
 
-/* ============================================================
-   10. ÉVÉNEMENTS & INITIALISATION
-   ============================================================ */
+
 const donneesPromise = chargerDonnees();
 
 el.powerBtn.addEventListener("click", async () => {
@@ -963,8 +895,6 @@ el.retryBtn.addEventListener("click", async () => {
 });
 
 el.restartBtn.addEventListener("click", recommencer);
-
-// Insertion de pièces interactives dans le monnayeur
 $$(".slot-coin, .slot-bill, .pay__row").forEach((slot) => {
   slot.addEventListener("click", () => {
     Audio_.coinDrop();
@@ -972,8 +902,6 @@ $$(".slot-coin, .slot-bill, .pay__row").forEach((slot) => {
     setTimeout(() => { if (partie.etat === "WAITING") el.panelCode.textContent = "01"; }, 1500);
   });
 });
-
-// Pavé numérique de la machine
 $$(".pad button").forEach((btn) => {
   btn.addEventListener("click", () => {
     const char = btn.textContent.trim() || "5";
@@ -981,9 +909,7 @@ $$(".pad button").forEach((btn) => {
   });
 });
 
-/* ============================================================
-   11. SYSTÈME D'INDICES & D'AIDE
-   ============================================================ */
+
 const indices = [
   "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées !",
   "💡 CONSEIL DE SURVIE #2 :\nUtilisez des mots-clés comme 'sort avec', 'trompé', 'secret', 'avoué', 'dossier', 'rupture', 'soirée' ou 'rumeur'.",
