@@ -54,6 +54,12 @@
   <!-- Compteur de tentatives -->
   <p class="counter" id="counter" hidden></p>
 
+  <!-- Bouton d'indice en haut à droite -->
+  <button class="hint-btn" id="hintBtn" type="button" aria-label="Obtenir un indice">
+    <span class="hint-btn__icon">💡</span>
+    <span class="hint-btn__label">INDICE</span>
+  </button>
+
   <!-- LA MACHINE ACIER -->
   <div class="vm" id="machine">
 
@@ -421,6 +427,16 @@
     <button class="btn btn--restart" id="restartBtn" type="button">✦ recommencer l'épreuve ✦</button>
   </div>
 </section>
+
+<!-- MODALE D'INDICE -->
+<div class="hint-modal" id="hintModal" hidden aria-hidden="true">
+  <div class="hint-modal__box">
+    <button class="hint-modal__close" id="hintClose" type="button" aria-label="Fermer">&times;</button>
+    <h2 class="hint-modal__title">💡 PROTOCOLE D'AIDE & INDICES</h2>
+    <p class="hint-modal__text" id="hintText"></p>
+    <button class="btn btn--hint-next" id="hintNext" type="button">INDICE SUIVANT ➔</button>
+  </div>
+</div>
 
 <script src="script-v2.js"></script>
 </body>

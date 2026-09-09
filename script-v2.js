@@ -35,6 +35,8 @@ const el = {
   iris:      $("#iris"),
   paradise:  $("#paradise"),  parQuote: $("#parQuote"),  restartBtn: $("#restartBtn"),
   parClouds: $("#parClouds"), parCoins: $("#parCoins"), parSparkles: $("#parSparkles"),
+  hintBtn: $("#hintBtn"), hintModal: $("#hintModal"), hintClose: $("#hintClose"),
+  hintText: $("#hintText"), hintNext: $("#hintNext"),
 };
 const segments = [...el.jauge.children];
 
@@ -992,7 +994,58 @@ $$(".pad button").forEach((btn) => {
   });
 });
 
+/* ============================================================
+   11. SYSTÈME D'INDICES & D'AIDE
+   ============================================================ */
+const indices = [
+  "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées !",
+  "💡 CONSEIL DE SURVIE #2 :\nUtilisez des mots-clés comme 'sort avec', 'trompé', 'secret', 'avoué', 'dossier', 'rupture', 'soirée' ou 'rumeur'.",
+  "💡 CONSEIL DE SURVIE #3 :\nExemple valide : 'Lucas sort avec Chloé en cachette depuis la soirée de vendredi.'",
+  "💡 CONSEIL DE SURVIE #4 :\nAjouter un nom propre (ex: Thomas, Sarah, M. Dupont) augmente grandement votre score auprès du distributeur.",
+  "💡 SECRET DES ARCHIVES :\nTapez 666 sur le clavier du distributeur pour tester la réaction du monstre..."
+];
+
+let hintIndex = 0;
+
+function showHint() {
+  if (!el.hintModal || !el.hintText) return;
+  Audio_.blip(true);
+  el.hintText.textContent = indices[hintIndex];
+  el.hintModal.hidden = false;
+  el.hintModal.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => el.hintModal.classList.add("show"));
+}
+
+function hideHint() {
+  if (!el.hintModal) return;
+  Audio_.blip(false);
+  el.hintModal.classList.remove("show");
+  setTimeout(() => {
+    el.hintModal.hidden = true;
+    el.hintModal.setAttribute("aria-hidden", "true");
+  }, 300);
+}
+
+if (el.hintBtn) {
+  el.hintBtn.addEventListener("click", showHint);
+}
+if (el.hintClose) {
+  el.hintClose.addEventListener("click", hideHint);
+}
+if (el.hintNext) {
+  el.hintNext.addEventListener("click", () => {
+    hintIndex = (hintIndex + 1) % indices.length;
+    showHint();
+  });
+}
+if (el.hintModal) {
+  el.hintModal.addEventListener("click", (e) => {
+    if (e.target === el.hintModal) hideHint();
+  });
+}
+
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && el.hintModal && !el.hintModal.hidden) hideHint();
   if (e.key === "Enter" && partie.etat === "REJECTED" && !el.retryBtn.hidden) el.retryBtn.click();
 });
 

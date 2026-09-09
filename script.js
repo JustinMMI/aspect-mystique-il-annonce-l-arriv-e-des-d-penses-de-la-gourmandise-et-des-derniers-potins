@@ -1,19 +1,24 @@
 /* =================================================================
-   LE DISTRIBUTEUR — logique du jeu
-   100% front-end : aucun backend, aucun appel réseau, aucune IA.
-   Le jugement du potin est un score par mots-clés (§2 du brief).
+   LE DISTRIBUTEUR v2 — Logique & Moteur Interactif Ultime
+   - Moteur Audio Synthétique Web Audio étendu (moteur, pièces, démon, étincelles)
+   - Effet de Parallaxe 3D Atmosphérique à la souris
+   - Animation physique de rotation des spirales et chute des snacks
+   - Insertion de pièces et rendu de monnaie interactifs
+   - Mode Surdrive Démoniaque (Easter Egg 666) & Codes secrets
+   - Particules dorées interactives au Paradis
    ================================================================= */
 (() => {
 "use strict";
 
 /* ============================================================
-   0. RACCOURCIS
+   0. RACCOURCIS & ÉLÉMENTS DOM
    ============================================================ */
 const $ = (sel) => document.querySelector(sel);
-const rnd    = (a, b) => Math.random() * (b - a) + a;
+const $$ = (sel) => [...document.querySelectorAll(sel)];
+const rnd = (a, b) => Math.random() * (b - a) + a;
 const rndInt = (a, b) => Math.floor(rnd(a, b + 1));
-const pick   = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const wait   = (ms) => new Promise((r) => setTimeout(r, ms));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const body = document.body;
 const el = {
@@ -29,102 +34,17 @@ const el = {
   scare:     $("#scare"),     scareWord: $("#scareWord"),
   iris:      $("#iris"),
   paradise:  $("#paradise"),  parQuote: $("#parQuote"),  restartBtn: $("#restartBtn"),
-  parClouds: $("#parClouds"), parCoins: $("#parCoins"),
+  parClouds: $("#parClouds"), parCoins: $("#parCoins"), parSparkles: $("#parSparkles"),
+  hintBtn: $("#hintBtn"), hintModal: $("#hintModal"), hintClose: $("#hintClose"),
+  hintText: $("#hintText"), hintNext: $("#hintNext"),
 };
 const segments = [...el.jauge.children];
 
 /* ============================================================
-   1. LE VOCABULAIRE DU POTIN (§2)
-   ------------------------------------------------------------
-   On stocke des RACINES, pas des mots entiers : "engueul" attrape
-   engueulé, engueulée, engueulés, engueuler... Sans ça, le moindre
-   pluriel passait à travers et la machine refusait tout.
+   1. MOTEUR AUDIO PROCÉDURAL WEB AUDIO API (100% Synthétisé)
    ============================================================ */
-const racines = [
-  // trahisons
-  "tromp", "cocu", "infidel", "trahi", "poucav", "cafard", "balance", "dossier", "nude",
-  // relations
-  "embrass", "largu", "plaqu", "quitt", "amoureu", "dragu", "flirt",
-  "crush", "ruptur", "rompu", "celibat", "pecho", "chopp", "bais", "cuch", "kiff", "galoch",
-  // mensonges et secrets
-  "menti", "menteur", "mensonge", "mytho", "cach", "avou", "jure",
-  "secret", "chuchot", "rumeur", "parait", "scandal", "surpris", "jalou",
-  // argent
-  "argent", "dette", "fauch", "rembours", "vole", "arnaqu", "piqu", "rachet",
-  // conflits
-  "engueul", "bagarre", "clash", "insult", "harcel", "menac", "frapp", "gifl",
-  "embrouill", "malaise", "honte", "genan", "ridicul",
-  // école & cours
-  "trich", "copi", "vire", "renvoy", "exclu", "redoubl", "convoqu", "surveillant", "prof", "note", "exam", "sech",
-  // vie & soirées
-  "ivre", "bourr", "vomi", "pleur", "demission", "licenci", "grossesse", "enceinte", "soiree", "fete", "alcool",
-  // réseaux
-  "story", "insta", "snap", "captur", "screen", "supprim", "bloqu", "ghost", "photo", "video",
-];
-
-/* Mots courts : seulement s'ils sont le mot entier (sinon "vol" attrape "volley") */
-const motsExacts = ["ex", "vol", "nue", "nu"];
-
-/* Expressions : recherchées telles quelles dans la phrase */
-const expressions = [
-  "sort avec", "sortent ensemble", "vu avec", "en cachette", "dans le dos",
-  "personne ne sait", "juré de ne rien dire", "il parait que", "on m a dit",
-  "tout le monde le sait", "s est fait", "a couché", "coup de", "sous le nez",
-];
-
-const phrasesBidons = ["rien", "sais pas", "aucune idée", "je sais pas", "chépa", "chais pas", "bonjour", "test"];
-
-const repliquesRejet = [
-  "C'est tout ? Mes capteurs s'ennuient.",
-  "Pathétique. Recommence.",
-  "Je connais déjà ça, humain.",
-  "Pas assez croustillant. Au suivant.",
-  "Tu appelles ça un potin ?",
-  "Insuffisant. Réessaie, si tu oses.",
-];
-
-const repliquesAcceptation = [
-  "...Intéressant. Entre.",
-  "Voilà enfin quelque chose digne de mon attention.",
-  "Ça, c'est un vrai potin. Bienvenue.",
-];
-
-/* Les trois paliers de l'analyse, affichés sur le bandeau de la machine */
-const paliers = [
-  { ticker: "...ANALYSE EN COURS...",    code: "ANALYSE", etat: "LECTURE" },
-  { ticker: "RECOUPEMENT DES TÉMOINS",   code: "RECOUP.", etat: "CROISEMENT" },
-  { ticker: "MESURE DU CROUSTILLANT",    code: "CRUST.",  etat: "PESÉE" },
-];
-
-const marmonnements = [
-  "je crois que j'ai déjà entendu ça.",
-  "...tu transpires, humain.",
-  "attends. redis-moi ce nom.",
-  "mes archives se souviennent de toi.",
-  "ne bouge pas. je regarde.",
-  "quelqu'un va souffrir de ça.",
-];
-
-const motsScare = ["RECALÉ", "REFUSÉ", "NON", "MENSONGE", "DÉGAGE"];
-
-/* ============================================================
-   2. SON — synthèse Web Audio (aucun fichier requis)
-   ------------------------------------------------------------
-   TODO SONS : pour brancher de vrais samples libres de droits
-   (freesound.org), déposer les fichiers dans assets/sounds/ puis
-   passer USE_FILES à true. Le reste du jeu ne change pas.
-   ============================================================ */
-const USE_FILES = false;                       // TODO SONS : passer à true si les mp3 sont fournis
-const FILES = {
-  hum:    "assets/sounds/hum.mp3",
-  glitch: "assets/sounds/glitch.mp3",
-  growl:  "assets/sounds/growl.mp3",
-  accept: "assets/sounds/accept-chime.mp3",
-};
-
 const Audio_ = (() => {
   let ctx = null, master = null, humNodes = null, noiseBuf = null;
-  const tags = {};
 
   function init() {
     if (ctx) return;
@@ -138,22 +58,7 @@ const Audio_ = (() => {
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-
-    if (USE_FILES) {
-      for (const k in FILES) {
-        const a = new Audio(FILES[k]);
-        a.preload = "auto";
-        if (k === "hum") { a.loop = true; a.volume = .35; }
-        tags[k] = a;
-      }
-    }
   }
-
-  const file = (k) => {
-    if (!USE_FILES || !tags[k]) return false;
-    try { tags[k].currentTime = 0; tags[k].play(); } catch (e) {}
-    return true;
-  };
 
   function noise(dur, gain, type, freq, q) {
     if (!ctx) return;
@@ -173,27 +78,27 @@ const Audio_ = (() => {
     },
 
     startHum() {
-      if (file("hum")) return;
       if (!ctx || humNodes) return;
-      const o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = 47;
-      const o2 = ctx.createOscillator(); o2.type = "square";   o2.frequency.value = 23.5;
-      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 180; lp.Q.value = 6;
+      const o1 = ctx.createOscillator(); o1.type = "sawtooth"; o1.frequency.value = 46;
+      const o2 = ctx.createOscillator(); o2.type = "square";   o2.frequency.value = 23;
+      const sub = ctx.createOscillator(); sub.type = "sine";   sub.frequency.value = 35;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 160; lp.Q.value = 5;
       const g  = ctx.createGain(); g.gain.value = 0;
-      const lfo = ctx.createOscillator(); lfo.frequency.value = .17;
-      const lfoG = ctx.createGain(); lfoG.gain.value = 34;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = .18;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 30;
       lfo.connect(lfoG).connect(lp.frequency);
-      o1.connect(lp); o2.connect(lp); lp.connect(g).connect(master);
-      o1.start(); o2.start(); lfo.start();
+      o1.connect(lp); o2.connect(lp); sub.connect(lp); lp.connect(g).connect(master);
+      o1.start(); o2.start(); sub.start(); lfo.start();
       g.gain.linearRampToValueAtTime(.14, ctx.currentTime + 2.5);
+
       const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
-      const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 3000;
+      const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 3200;
       const ng = ctx.createGain(); ng.gain.value = .012;
       src.connect(hp).connect(ng).connect(master); src.start();
-      humNodes = { o1, o2, lfo, g, noise: src, ng, lp };
+      humNodes = { o1, o2, sub, lfo, g, noise: src, ng, lp };
     },
 
     stopHum(fade = .35) {
-      if (USE_FILES && tags.hum) { try { tags.hum.pause(); } catch (e) {} }
       if (!ctx || !humNodes) return;
       const n = humNodes; humNodes = null;
       n.g.gain.cancelScheduledValues(ctx.currentTime);
@@ -201,14 +106,16 @@ const Audio_ = (() => {
       n.g.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fade);
       n.ng.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + fade);
       setTimeout(() => {
-        [n.o1, n.o2, n.lfo, n.noise].forEach((o) => { try { o.stop(); } catch (e) {} });
+        [n.o1, n.o2, n.sub, n.lfo, n.noise].forEach((o) => { try { o.stop(); } catch (e) {} });
       }, fade * 1000 + 60);
     },
 
     humTension(k) {
       if (!ctx || !humNodes) return;
-      humNodes.lp.frequency.setTargetAtTime(180 + k * 520, ctx.currentTime, .4);
-      humNodes.g.gain.setTargetAtTime(.14 + k * .1, ctx.currentTime, .5);
+      humNodes.lp.frequency.setTargetAtTime(160 + k * 850, ctx.currentTime, .3);
+      humNodes.lp.Q.setTargetAtTime(5 + k * 12, ctx.currentTime, .3);
+      humNodes.g.gain.setTargetAtTime(.14 + k * .22, ctx.currentTime, .3);
+      humNodes.lfo.frequency.setTargetAtTime(.18 + k * 2.8, ctx.currentTime, .3);
     },
 
     duck(ms = 450) {
@@ -225,12 +132,12 @@ const Audio_ = (() => {
       if (!ctx) return;
       const o = ctx.createOscillator(); o.type = "square";
       const g = ctx.createGain(); g.gain.value = .0001;
-      o.frequency.setValueAtTime(40, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 1.4);
-      g.gain.exponentialRampToValueAtTime(.1, ctx.currentTime + .5);
+      o.frequency.setValueAtTime(35, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(380, ctx.currentTime + 1.4);
+      g.gain.exponentialRampToValueAtTime(.12, ctx.currentTime + .5);
       g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + 1.6);
       o.connect(g).connect(master); o.start(); o.stop(ctx.currentTime + 1.7);
-      noise(.5, .1, "bandpass", 1200, .8);
+      noise(.5, .12, "bandpass", 1200, .8);
     },
 
     blip(high = false) {
@@ -238,83 +145,222 @@ const Audio_ = (() => {
       const o = ctx.createOscillator(); o.type = "square";
       o.frequency.value = high ? rnd(1100, 1500) : rnd(680, 980);
       const g = ctx.createGain();
-      g.gain.setValueAtTime(high ? .022 : .035, ctx.currentTime);
+      g.gain.setValueAtTime(high ? .025 : .04, ctx.currentTime);
       g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .04);
       o.connect(g).connect(master); o.start(); o.stop(ctx.currentTime + .05);
     },
 
-    clack(rate) { noise(.05, .05 + rate * .09, "bandpass", 300 + rate * 1100, 3); },
+    clack(rate) { noise(.06, .06 + rate * .12, "bandpass", 280 + rate * 1400, 3.5); },
 
+    // Pulsation cardiaque double hyper-réaliste (systole & diastole) avec accélération et résonance
     heart(k = 0) {
       if (!ctx) return;
       const t = ctx.currentTime;
-      const o = ctx.createOscillator(); o.type = "sine";
-      o.frequency.setValueAtTime(72 + k * 20, t);
-      o.frequency.exponentialRampToValueAtTime(38, t + .16);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(.0001, t);
-      g.gain.exponentialRampToValueAtTime(.22 + k * .18, t + .02);
-      g.gain.exponentialRampToValueAtTime(.0001, t + .28);
-      o.connect(g).connect(master); o.start(t); o.stop(t + .3);
+      
+      // Systole (impact lourd sub-bass 90Hz -> 30Hz)
+      const o1 = ctx.createOscillator(); o1.type = "sine";
+      o1.frequency.setValueAtTime(95 + k * 35, t);
+      o1.frequency.exponentialRampToValueAtTime(30, t + 0.16);
+      const g1 = ctx.createGain();
+      g1.gain.setValueAtTime(0.001, t);
+      g1.gain.exponentialRampToValueAtTime(0.4 + k * 0.25, t + 0.02);
+      g1.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      o1.connect(g1).connect(master); o1.start(t); o1.stop(t + 0.25);
+
+      // Clic vasculaire aigu (ouverture de valve)
+      noise(0.03, 0.05 + k * 0.04, "highpass", 2400, 4);
+
+      // Diastole (second impact 100ms plus tard)
+      const offset = Math.max(0.08, 0.12 - k * 0.03);
+      const o2 = ctx.createOscillator(); o2.type = "sine";
+      o2.frequency.setValueAtTime(75 + k * 28, t + offset);
+      o2.frequency.exponentialRampToValueAtTime(25, t + offset + 0.14);
+      const g2 = ctx.createGain();
+      g2.gain.setValueAtTime(0.001, t + offset);
+      g2.gain.exponentialRampToValueAtTime(0.3 + k * 0.2, t + offset + 0.02);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.24);
+      o2.connect(g2).connect(master); o2.start(t + offset); o2.stop(t + offset + 0.28);
     },
 
     riser(dur) {
       if (!ctx) return null;
       const t = ctx.currentTime;
-      const o = ctx.createOscillator(); o.type = "sawtooth";
-      o.frequency.setValueAtTime(70, t);
-      o.frequency.exponentialRampToValueAtTime(880, t + dur);
+      const o1 = ctx.createOscillator(); o1.type = "sawtooth";
+      o1.frequency.setValueAtTime(50, t);
+      o1.frequency.exponentialRampToValueAtTime(1200, t + dur);
+      const o2 = ctx.createOscillator(); o2.type = "square";
+      o2.frequency.setValueAtTime(53, t);
+      o2.frequency.exponentialRampToValueAtTime(1220, t + dur);
+
       const lp = ctx.createBiquadFilter(); lp.type = "lowpass";
-      lp.frequency.setValueAtTime(300, t);
-      lp.frequency.exponentialRampToValueAtTime(3200, t + dur);
-      lp.Q.value = 8;
+      lp.frequency.setValueAtTime(180, t);
+      lp.frequency.exponentialRampToValueAtTime(4500, t + dur);
+      lp.Q.value = 11;
       const g = ctx.createGain();
       g.gain.setValueAtTime(.0001, t);
-      g.gain.exponentialRampToValueAtTime(.09, t + dur * .8);
-      o.connect(lp).connect(g).connect(master);
-      o.start(t);
+      g.gain.exponentialRampToValueAtTime(.16, t + dur * .85);
+      o1.connect(lp); o2.connect(lp); lp.connect(g).connect(master);
+      o1.start(t); o2.start(t);
       return { stop(){ try {
         g.gain.cancelScheduledValues(ctx.currentTime);
         g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
         g.gain.linearRampToValueAtTime(.0001, ctx.currentTime + .08);
-        o.stop(ctx.currentTime + .12);
+        o1.stop(ctx.currentTime + .12); o2.stop(ctx.currentTime + .12);
       } catch (e) {} } };
     },
 
-    static(dur = .3) { if (!file("glitch")) noise(dur, .22, "highpass", 900, 1); },
+    static(dur = .3) { noise(dur, .32, "highpass", 750, 1.4); },
 
-    growl() {
-      if (file("growl")) return;
+    // SCREAMER ULTIME (5 Couches Synchronisées : Sub-Slam, FM-Screech, Grognement Bio, Bruit Métallique & Écho)
+    screamer() {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+
+      // Layer 1: Sub-bass shockwave impact (Impact colossal 180Hz -> 20Hz avec saturation WaveShaper)
+      const sub = ctx.createOscillator(); sub.type = "sawtooth";
+      sub.frequency.setValueAtTime(180, t);
+      sub.frequency.exponentialRampToValueAtTime(20, t + 1.6);
+      const sh = ctx.createWaveShaper();
+      const curve = new Float32Array(1024);
+      for (let i = 0; i < 1024; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 12); }
+      sh.curve = curve; sh.oversample = "4x";
+      const subG = ctx.createGain();
+      subG.gain.setValueAtTime(0.001, t);
+      subG.gain.exponentialRampToValueAtTime(0.85, t + 0.02);
+      subG.gain.exponentialRampToValueAtTime(0.001, t + 1.6);
+      sub.connect(sh).connect(subG).connect(master);
+      sub.start(t); sub.stop(t + 1.65);
+
+      // Layer 2: FM Stridence Aiguë (Screech monstrueux 2800Hz -> 150Hz modulé à 65Hz)
+      const carrier = ctx.createOscillator(); carrier.type = "sawtooth";
+      carrier.frequency.setValueAtTime(2800, t);
+      carrier.frequency.exponentialRampToValueAtTime(150, t + 0.95);
+      const modulator = ctx.createOscillator(); modulator.type = "sine";
+      modulator.frequency.setValueAtTime(65, t);
+      modulator.frequency.exponentialRampToValueAtTime(25, t + 0.95);
+      const modG = ctx.createGain(); modG.gain.value = 550;
+      modulator.connect(modG).connect(carrier.frequency);
+      const screechG = ctx.createGain();
+      screechG.gain.setValueAtTime(0.001, t);
+      screechG.gain.exponentialRampToValueAtTime(0.45, t + 0.02);
+      screechG.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+      modulator.start(t); carrier.start(t);
+      carrier.connect(screechG).connect(master);
+      modulator.stop(t + 1.05); carrier.stop(t + 1.05);
+
+      // Layer 3: Grognement Viscéral (Filtre Bandpass balayant de 1600Hz à 60Hz)
+      const growlOsc = ctx.createOscillator(); growlOsc.type = "sawtooth";
+      growlOsc.frequency.setValueAtTime(120, t);
+      growlOsc.frequency.linearRampToValueAtTime(45, t + 1.2);
+      const growlF = ctx.createBiquadFilter(); growlF.type = "bandpass";
+      growlF.frequency.setValueAtTime(1600, t);
+      growlF.frequency.exponentialRampToValueAtTime(70, t + 1.2);
+      growlF.Q.value = 7;
+      const growlG = ctx.createGain();
+      growlG.gain.setValueAtTime(0.001, t);
+      growlG.gain.exponentialRampToValueAtTime(0.5, t + 0.04);
+      growlG.gain.exponentialRampToValueAtTime(0.001, t + 1.25);
+      growlOsc.connect(growlF).connect(growlG).connect(master);
+      growlOsc.start(t); growlOsc.stop(t + 1.3);
+
+      // Layer 4: Bruit d'explosion stridente & squelch mouillé
+      noise(1.1, 0.45, "lowpass", 700, 2.5);
+      noise(0.6, 0.35, "highpass", 2200, 3.5);
+
+      // Layer 5: Râle démoniaque d'écho sub
+      setTimeout(() => {
+        if (!ctx) return;
+        const subEcho = ctx.createOscillator(); subEcho.type = "sine";
+        subEcho.frequency.setValueAtTime(40, ctx.currentTime);
+        subEcho.frequency.exponentialRampToValueAtTime(18, ctx.currentTime + 1.0);
+        const subEG = ctx.createGain();
+        subEG.gain.setValueAtTime(0.3, ctx.currentTime);
+        subEG.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+        subEcho.connect(subEG).connect(master);
+        subEcho.start(); subEcho.stop(ctx.currentTime + 1.05);
+      }, 150);
+    },
+
+    growl() { this.screamer(); },
+
+    // Son de défaite (Trappe métallique se fermant + impact lourd + bourdonnement mourant)
+    defeatSound() {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      
+      // Slam métallique lourd
+      const o = ctx.createOscillator(); o.type = "triangle";
+      o.frequency.setValueAtTime(220, t);
+      o.frequency.exponentialRampToValueAtTime(30, t + 0.4);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.6, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+      o.connect(g).connect(master); o.start(t); o.stop(t + 0.5);
+
+      noise(0.4, 0.4, "bandpass", 450, 4);
+    },
+
+    // Bruitage mécanique de rotation des spirales
+    motor(dur = 1.2) {
       if (!ctx) return;
       const t = ctx.currentTime;
       const o = ctx.createOscillator(); o.type = "sawtooth";
-      o.frequency.setValueAtTime(230, t);
-      o.frequency.exponentialRampToValueAtTime(26, t + 1.2);
-      const sh = ctx.createWaveShaper();
-      const curve = new Float32Array(1024);
-      for (let i = 0; i < 1024; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 8); }
-      sh.curve = curve; sh.oversample = "4x";
-      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 950;
+      o.frequency.setValueAtTime(110, t);
+      o.frequency.linearRampToValueAtTime(85, t + dur);
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 450;
       const g = ctx.createGain();
-      g.gain.setValueAtTime(.0001, t);
-      g.gain.exponentialRampToValueAtTime(.55, t + .04);
-      g.gain.exponentialRampToValueAtTime(.0001, t + 1.3);
-      o.connect(sh).connect(lp).connect(g).connect(master);
-      o.start(t); o.stop(t + 1.4);
-      noise(.7, .32, "lowpass", 700, 1);
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(0.12, t + 0.1);
+      g.gain.linearRampToValueAtTime(0.001, t + dur);
+      o.connect(lp).connect(g).connect(master);
+      o.start(t); o.stop(t + dur + 0.05);
+      noise(dur, 0.08, "bandpass", 600, 2);
     },
 
-    chime() {
-      if (file("accept")) return;
+    coinDrop() {
       if (!ctx) return;
       const t = ctx.currentTime;
-      [880, 1320, 1760, 2640].forEach((f, i) => {
+      [1800, 2400, 3100, 4200].forEach((f, i) => {
         const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f;
         const g = ctx.createGain();
-        g.gain.setValueAtTime(.0001, t + i * .05);
-        g.gain.exponentialRampToValueAtTime(.16 / (i + 1), t + i * .05 + .01);
-        g.gain.exponentialRampToValueAtTime(.0001, t + 2.4 + i * .1);
-        o.connect(g).connect(master); o.start(t + i * .05); o.stop(t + 3);
+        g.gain.setValueAtTime(0.001, t + i * 0.05);
+        g.gain.exponentialRampToValueAtTime(0.12, t + i * 0.05 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.05 + 0.14);
+        o.connect(g).connect(master);
+        o.start(t + i * 0.05); o.stop(t + i * 0.05 + 0.16);
+      });
+      noise(0.2, 0.1, "highpass", 2200, 2.5);
+    },
+
+    demonic() {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      const o = ctx.createOscillator(); o.type = "sawtooth";
+      o.frequency.setValueAtTime(70, t);
+      o.frequency.linearRampToValueAtTime(25, t + 2.8);
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 380; lp.Q.value = 12;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(0.45, t + 0.2);
+      g.gain.linearRampToValueAtTime(0.001, t + 2.8);
+      o.connect(lp).connect(g).connect(master);
+      o.start(t); o.stop(t + 2.9);
+      noise(2.8, 0.28, "lowpass", 450, 1.2);
+    },
+
+    // Carillon céleste féerique d'accès au paradis (Accord C Maj 9th avec résonance scintillante)
+    chime() {
+      if (!ctx) return;
+      const t = ctx.currentTime;
+      const freqs = [523.25, 659.25, 783.99, 987.77, 1174.66, 1567.98, 1975.53, 2349.32]; // C5 à D7
+      freqs.forEach((f, i) => {
+        const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t + i * 0.05);
+        g.gain.exponentialRampToValueAtTime(0.22 / (i * 0.25 + 1), t + i * 0.05 + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 3.2 + i * 0.1);
+        o.connect(g).connect(master);
+        o.start(t + i * 0.05); o.stop(t + 3.6);
       });
     },
 
@@ -322,29 +368,33 @@ const Audio_ = (() => {
       if (!ctx) return null;
       const t = ctx.currentTime;
       const g = ctx.createGain(); g.gain.value = 0; g.connect(master);
-      [261.6, 329.6, 392, 523.2].forEach((f, i) => {
-        const o = ctx.createOscillator(); o.type = i === 3 ? "triangle" : "sine";
+      // Nappe céleste majestueuse (C Maj 7 + Tremolo + Octaves Célestes)
+      [130.81, 261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 1046.50].forEach((f, i) => {
+        const o = ctx.createOscillator(); o.type = i % 2 === 0 ? "sine" : "triangle";
         o.frequency.value = f;
-        const og = ctx.createGain(); og.gain.value = .07 / (i * .5 + 1);
-        o.connect(og).connect(g); o.start(); o.stop(t + 30);
+        const lfo = ctx.createOscillator(); lfo.frequency.value = 3.5 + i * 0.4;
+        const lfoG = ctx.createGain(); lfoG.gain.value = 0.02;
+        lfo.connect(lfoG).connect(o.frequency);
+        const og = ctx.createGain(); og.gain.value = 0.09 / (i * 0.35 + 1);
+        o.connect(og).connect(g);
+        lfo.start(t); o.start(t); o.stop(t + 60);
       });
-      g.gain.linearRampToValueAtTime(.5, t + 2.2);
+      g.gain.linearRampToValueAtTime(0.6, t + 2.5);
       return g;
     },
   };
 })();
 
 /* ============================================================
-   3. LES YEUX — clignement irrégulier + suivi du curseur
+   2. PARALLAXE 3D ATMOSPHÉRIQUE & YEUX
    ============================================================ */
-const Eyes = (() => {
-  const nodes = [...document.querySelectorAll("[data-eye]")];
-  let blinkTimer = null, tracking = false, mx = 0, my = 0, raf = null;
+const EyesAndParallax = (() => {
+  const nodes = $$("[data-eye]");
+  let blinkTimer = null, tracking = false, mx = window.innerWidth / 2, my = window.innerHeight / 2, raf = null;
 
   function scheduleBlink() {
     clearTimeout(blinkTimer);
     blinkTimer = setTimeout(() => {
-      // les yeux ne clignent jamais ensemble : c'est plus dérangeant
       nodes.forEach((n, i) => setTimeout(() => {
         n.classList.add("blink");
         setTimeout(() => n.classList.remove("blink"), rndInt(90, 170));
@@ -354,6 +404,7 @@ const Eyes = (() => {
   }
 
   function loop() {
+    // Suivi du regard (sans aucune inclinaison 3D du couloir)
     nodes.forEach((n) => {
       const ball = n.querySelector(".eye__ball");
       if (!ball) return;
@@ -373,14 +424,14 @@ const Eyes = (() => {
       if (tracking) return;
       tracking = true;
       scheduleBlink();
-      const updateCoords = (cx, cy) => {
+      const update = (cx, cy) => {
         mx = cx; my = cy;
         if (!raf) raf = requestAnimationFrame(loop);
       };
-      window.addEventListener("pointermove", (e) => updateCoords(e.clientX, e.clientY), { passive: true });
-      window.addEventListener("pointerdown", (e) => updateCoords(e.clientX, e.clientY), { passive: true });
+      window.addEventListener("pointermove", (e) => update(e.clientX, e.clientY), { passive: true });
+      window.addEventListener("pointerdown", (e) => update(e.clientX, e.clientY), { passive: true });
       window.addEventListener("touchmove", (e) => {
-        if (e.touches && e.touches[0]) updateCoords(e.touches[0].clientX, e.touches[0].clientY);
+        if (e.touches && e.touches[0]) update(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
     },
     scanning(on) { el.eyes.classList.toggle("scanning", on); },
@@ -391,28 +442,28 @@ const Eyes = (() => {
 })();
 
 /* ============================================================
-   4. LE BANDEAU DE LA MACHINE (dot-matrix + jauge)
+   3. BANDEAU DE LA MACHINE
    ============================================================ */
 function ticker(texte, ton) {
   el.tickerTxt.textContent = texte;
   el.tickerTxt.className = "ticker__txt" + (ton ? " " + ton : "");
 }
-function jauge(p) {                              // p entre 0 et 1
+function jauge(p) {
   const n = segments.length;
   segments.forEach((s, i) => s.classList.toggle("on", i / n < p));
 }
 
 /* ============================================================
-   5. LA BOÎTE DE DIALOGUE — tout se dit lettre par lettre
+   4. BOÎTE DE DIALOGUE AVEC MACHINE À ÉCRIRE
    ============================================================ */
-let typing = 0;                                  // jeton d'annulation
+let typing = 0;
 
 function speaker(who) {
   el.dlgWho.textContent = who;
   el.dlgWho.classList.toggle("is-you", who === "VOUS");
 }
 
-async function say(text, { speed = 32, cls = "", sound = true } = {}) {
+async function say(text, { speed = 30, cls = "", sound = true } = {}) {
   const token = ++typing;
   el.dlgText.className = "dialogue__text caret" + (cls ? " " + cls : "");
   el.dlgText.textContent = "";
@@ -420,7 +471,7 @@ async function say(text, { speed = 32, cls = "", sound = true } = {}) {
     if (token !== typing) return false;
     el.dlgText.textContent += ch;
     if (sound && ch !== " " && Math.random() > .3) Audio_.blip();
-    await wait(ch === "." || ch === "," ? speed * 3.5 : speed + rnd(-8, 16));
+    await wait(ch === "." || ch === "," ? speed * 3.5 : speed + rnd(-8, 14));
   }
   if (token === typing) el.dlgText.classList.remove("caret");
   return true;
@@ -434,13 +485,59 @@ function clearDialogue() {
 }
 
 /* ============================================================
-   6. LE JUGEMENT (§2) — score par mots-clés, jamais affiché
+   5. DICTIONNAIRE & JUGEMENT DU POTIN
    ============================================================ */
+const racines = [
+  "tromp", "cocu", "infidel", "trahi", "poucav", "cafard", "balance", "dossier", "nude",
+  "embrass", "largu", "plaqu", "quitt", "amoureu", "dragu", "flirt",
+  "crush", "ruptur", "rompu", "celibat", "pecho", "chopp", "bais", "cuch", "kiff", "galoch",
+  "menti", "menteur", "mensonge", "mytho", "cach", "avou", "jure",
+  "secret", "chuchot", "rumeur", "parait", "scandal", "surpris", "jalou",
+  "argent", "dette", "fauch", "rembours", "vole", "arnaqu", "piqu", "rachet",
+  "engueul", "bagarre", "clash", "insult", "harcel", "menac", "frapp", "gifl",
+  "embrouill", "malaise", "honte", "genan", "ridicul",
+  "trich", "copi", "vire", "renvoy", "exclu", "redoubl", "convoqu", "surveillant", "prof", "note", "exam", "sech",
+  "ivre", "bourr", "vomi", "pleur", "demission", "licenci", "grossesse", "enceinte", "soiree", "fete", "alcool",
+  "story", "insta", "snap", "captur", "screen", "supprim", "bloqu", "ghost", "photo", "video",
+];
+const motsExacts = ["ex", "vol", "nue", "nu"];
+const expressions = [
+  "sort avec", "sortent ensemble", "vu avec", "en cachette", "dans le dos",
+  "personne ne sait", "juré de ne rien dire", "il parait que", "on m a dit",
+  "tout le monde le sait", "s est fait", "a couché", "coup de", "sous le nez",
+];
+const phrasesBidons = ["rien", "sais pas", "aucune idée", "je sais pas", "chépa", "chais pas", "bonjour", "test"];
+const repliquesRejet = [
+  "C'est tout ? Mes capteurs s'ennuient.",
+  "Pathétique. Recommence.",
+  "Je connais déjà ça, humain.",
+  "Pas assez croustillant. Au suivant.",
+  "Tu appelles ça un potin ?",
+  "Insuffisant. Réessaie, si tu oses.",
+];
+const repliquesAcceptation = [
+  "...Intéressant. Entre.",
+  "Voilà enfin quelque chose digne de mon attention.",
+  "Ça, c'est un vrai potin. Bienvenue.",
+];
+const paliers = [
+  { ticker: "...ANALYSE EN COURS...",    code: "ANALYSE", etat: "LECTURE" },
+  { ticker: "RECOUPEMENT DES TÉMOINS",   code: "RECOUP.", etat: "CROISEMENT" },
+  { ticker: "MESURE DU CROUSTILLANT",    code: "CRUST.",  etat: "PESÉE" },
+];
+const marmonnements = [
+  "je crois que j'ai déjà entendu ça.",
+  "...tu transpires, humain.",
+  "attends. redis-moi ce nom.",
+  "mes archives se souviennent de toi.",
+  "ne bouge pas. je regarde.",
+  "quelqu'un va souffrir de ça.",
+];
+const motsScare = ["RECALÉ", "REFUSÉ", "NON", "MENSONGE", "DÉGAGE"];
+
 const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 const escapeRe  = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/* racine + jusqu'à 8 lettres : attrape les accords et les conjugaisons françaises
-   ("engueul" -> engueulé, engueulée, engueulés, engueuler, engueulaient)   */
 const testRacine = (norm, r) =>
   new RegExp(`(^|[^a-z0-9])${escapeRe(r)}[a-z]{0,8}([^a-z0-9]|$)`).test(norm);
 const testExact = (norm, m) =>
@@ -451,28 +548,21 @@ function juger(texte) {
   const mots = brut.split(/\s+/).filter(Boolean);
   const norm = normalize(brut);
 
-  // --- Rejets automatiques ---
   if (mots.length < 3) return { accepte: false, raison: "court" };
-  // "rien", "je sais pas"… ne disqualifient que les phrases courtes :
-  // « je sais pas si c'est vrai mais Camille a trompé Julien » reste un potin.
   if (mots.length <= 6) {
     for (const bidon of phrasesBidons) {
       if (norm.includes(normalize(bidon))) return { accepte: false, raison: "bidon" };
     }
   }
 
-  // --- Score ---
   let score = 0;
-
-  // +2 par trouvaille distincte, plafonné à +6 (anti-spam d'un même mot)
   const trouves = new Set();
   for (const r of racines)     if (testRacine(norm, normalize(r))) trouves.add(r);
   for (const m of motsExacts)  if (testExact(norm, normalize(m)))  trouves.add(m);
   for (const e of expressions) if (norm.includes(normalize(e)))    trouves.add(e);
   score += Math.min(trouves.size * 2, 6);
 
-  // +2 si quelqu'un est nommément visé (majuscule ailleurs qu'en début de phrase ou ALL CAPS)
-  const motsExclus = ["ET", "LA", "LE", "LES", "UN", "UNE", "DES", "PAR", "SUR", "DANS", "AVEC", "POUR", "mais", "mais".toUpperCase()];
+  const motsExclus = ["ET", "LA", "LE", "LES", "UN", "UNE", "DES", "PAR", "SUR", "DANS", "AVEC", "POUR", "MAIS"];
   const nomPropre = mots.slice(1).some((m) => {
     const w = m.replace(/^[^A-Za-zÀ-ÿ]+|[^A-Za-zÀ-ÿ]+$/g, "");
     if (w.length <= 1 || motsExclus.includes(w)) return false;
@@ -480,7 +570,6 @@ function juger(texte) {
   });
   if (nomPropre) score += 2;
 
-  // le détail paie
   if (mots.length > 6)  score += 1;
   if (mots.length > 12) score += 1;
 
@@ -488,7 +577,7 @@ function juger(texte) {
 }
 
 /* ============================================================
-   7. COMPTEUR DE SESSION (localStorage)
+   6. COMPTEUR & ÉTAT
    ============================================================ */
 const KEY = "distributeur.v1";
 const stats = (() => {
@@ -505,9 +594,6 @@ function renderCounter() {
   el.counter.innerHTML = `Tentatives : <b>${stats.tentatives}</b> — Recalé(e) : <b>${stats.recales}</b>`;
 }
 
-/* ============================================================
-   8. ÉTAT DE LA PARTIE
-   ============================================================ */
 const partie = { seuil: 4, etat: "OFF" };
 let paradisGain = null, panelTimer = null;
 
@@ -532,15 +618,11 @@ function tension(niveau) {
 }
 
 /* ============================================================
-   9. LES ÉTATS DU JEU
+   7. ÉTATS DU JEU & EXPÉRIENCE INTERACTIVE
    ============================================================ */
-
-/* --- BOOT --------------------------------------------------- */
 async function boot() {
   setEtat("BOOT", "00", "DÉMARRAGE");
-  // L'humeur du jour : seuil d'exigence tiré une fois par partie (3 à 5).
   partie.seuil = rndInt(3, 5);
-
   tension(0);
   clearDialogue();
   jauge(0);
@@ -550,11 +632,11 @@ async function boot() {
   el.input.value = "";
   el.lampGreen.classList.remove("on");
   body.classList.remove("feeding");
-  Eyes.lunge(false); Eyes.scanning(false);
+  EyesAndParallax.lunge(false); EyesAndParallax.scanning(false);
   renderCounter();
   speaker("SYSTÈME");
 
-  body.classList.add("is-on");                   // les paupières s'ouvrent (CSS)
+  body.classList.add("is-on");
   Audio_.boot();
   Audio_.startHum();
   await wait(900);
@@ -563,14 +645,13 @@ async function boot() {
   await wait(280);
   Audio_.static(.25);
   speaker("LE DISTRIBUTEUR");
-  await say("SYSTÈME EN COURS DE RÉVEIL...", { speed: 40 });
+  await say("SYSTÈME EN COURS DE RÉVEIL...", { speed: 38 });
   await wait(620);
-  await say("INSÈRE UN POTIN POUR CONTINUER.", { speed: 40 });
+  await say("INSÈRE UN POTIN POUR CONTINUER.", { speed: 38 });
 
   waitingInput();
 }
 
-/* --- WAITING_INPUT ------------------------------------------ */
 function waitingInput() {
   setEtat("WAITING", "01", "EN ATTENTE");
   panelNoise(false);
@@ -584,11 +665,10 @@ function waitingInput() {
   el.feedBtn.disabled = false;
   el.lampGreen.classList.add("on");
   body.classList.remove("feeding");
-  Eyes.lunge(false); Eyes.scanning(false);
+  EyesAndParallax.lunge(false); EyesAndParallax.scanning(false);
   el.input.focus({ preventScroll: true });
 }
 
-/* --- JUDGING : la montée de tension -------------------------- */
 async function judging(texte) {
   setEtat("JUDGING", "??", "ANALYSE");
   clearDialogue();
@@ -597,31 +677,28 @@ async function judging(texte) {
   el.retryBtn.hidden = true;
   body.classList.remove("feeding");
   panelNoise(true);
-  Eyes.scanning(true);
+  EyesAndParallax.scanning(true);
   jauge(0);
   ticker(paliers[0].ticker);
 
   stats.tentatives++; saveStats(); renderCounter();
 
-  const duree = rnd(3600, 4600);                 // l'attente est longue : c'est le but
+  const duree = rnd(3600, 4600);
   const riser = Audio_.riser(duree / 1000);
   let palier = 0, prochainClack = 0, prochainCoeur = 0, marmonne = false;
 
   tension(1);
-
   const t0 = performance.now();
+
   await new Promise((resolve) => {
     (function frame(now) {
       const p = Math.min((now - t0) / duree, 1);
-
-      // Progression saccadée : la jauge cale, recule, repart
       let v = p;
-      if (p > .34 && p < .46) v = .34 + (p - .34) * .18;      // 1er blocage
-      if (p > .70 && p < .80) v = .55 - (p - .70) * .40;      // recul angoissant
+      if (p > .34 && p < .46) v = .34 + (p - .34) * .18;
+      if (p > .70 && p < .80) v = .55 - (p - .70) * .40;
       if (p >= .80) v = .50 + (p - .80) * 2.5;
       jauge(Math.max(0, Math.min(1, v)));
 
-      // Paliers : bandeau, écran, étau, tremblement
       const cible = p > .74 ? 3 : p > .40 ? 2 : 1;
       if (cible !== palier) {
         palier = cible;
@@ -650,15 +727,14 @@ async function judging(texte) {
     })(t0);
   });
 
-  // --- LE SILENCE : tout s'arrête une seconde. C'est le pire moment. ---
   if (riser) riser.stop();
   Audio_.duck(700);
   panelNoise(false);
   jauge(1);
   ticker("VERDICT...", "alerte");
   setEtat("JUDGING", "!!", "VERDICT");
-  Eyes.scanning(false);
-  Eyes.freeze();
+  EyesAndParallax.scanning(false);
+  EyesAndParallax.freeze();
   clearDialogue();
   tension(3);
   await wait(750);
@@ -667,37 +743,34 @@ async function judging(texte) {
   if (res.accepte) accepte(); else rejete();
 }
 
-/* --- REJETÉ (jump scare) ------------------------------------ */
 async function rejete() {
   setEtat("REJECTED", "XX", "REFUSÉ");
   stats.recales++; saveStats(); renderCounter();
   ticker("REFUSÉ", "alerte");
 
-  // 1) la ruée : flash, glitch, l'œil qui bondit, growl, mot plein écran
-  Audio_.growl();
+  Audio_.screamer();
   Audio_.static(.5);
   el.scareWord.textContent = pick(motsScare);
   el.scare.hidden = false;
   body.classList.add("flash", "glitch", "rush");
-  Eyes.lunge(true);
+  EyesAndParallax.lunge(true);
   await wait(230);
   body.classList.remove("flash");
   await wait(260);
-  el.scareWord.textContent = pick(motsScare);   // le mot change : effet de saut
+  el.scareWord.textContent = pick(motsScare);
   Audio_.static(.25);
   await wait(320);
   body.classList.remove("rush");
-  Eyes.lunge(false);
+  EyesAndParallax.lunge(false);
   el.scare.hidden = true;
   await wait(220);
   body.classList.remove("glitch");
+  Audio_.defeatSound();
   tension(0);
 
-  // 2) la sentence, tapée lettre par lettre dans la boîte du bas
   speaker("LE DISTRIBUTEUR");
-  await say(pick(repliquesRejet), { speed: 62, cls: "angry" });
+  await say(pick(repliquesRejet), { speed: 60, cls: "angry" });
 
-  // 3) statistique inventée, purement décorative (§1.4)
   await wait(300);
   el.dlgStat.textContent = `${rndInt(70, 95)}% des visiteurs n'ont pas survécu à leur potin.`;
   await wait(260);
@@ -705,18 +778,16 @@ async function rejete() {
   el.retryBtn.focus({ preventScroll: true });
 }
 
-/* --- ACCEPTÉ (le paradis) ----------------------------------- */
 async function accepte() {
   setEtat("ACCEPTED", "OK", "OUVERTURE");
   tension(0);
   ticker("ACCÈS ACCORDÉ", "ok");
   speaker("LE DISTRIBUTEUR");
-  await say("ACCÈS ACCORDÉ.", { speed: 55 });
+  await say("ACCÈS ACCORDÉ.", { speed: 50 });
 
   Audio_.chime();
   await wait(650);
 
-  // La porte s'ouvre : voile noir, changement de décor, iris qui s'agrandit.
   el.iris.classList.add("active");
   await wait(420);
 
@@ -735,7 +806,6 @@ async function accepte() {
   el.iris.classList.remove("active", "open");
 }
 
-/* --- RECOMMENCER (paradis -> BOOT) -------------------------- */
 async function recommencer() {
   if (paradisGain) {
     try { paradisGain.gain.linearRampToValueAtTime(0.0001, paradisGain.context.currentTime + .6); } catch (e) {}
@@ -750,7 +820,7 @@ async function recommencer() {
   body.classList.remove("in-paradise", "is-on");
   el.scene.style.display = "";
   el.dialogue.style.display = "";
-  Eyes.center();
+  EyesAndParallax.center();
   el.iris.classList.remove("close");
   await wait(500);
   el.iris.classList.remove("active");
@@ -758,48 +828,126 @@ async function recommencer() {
 }
 
 /* ============================================================
-   10. DÉCOR DU PARADIS (nuages + pluie de pièces)
+   8. INTERACTION PHYSIQUE DES SNACKS & PAVÉ NUMÉRIQUE
+   ============================================================ */
+function triggerSnackDrop(code) {
+  Audio_.motor(1.2);
+  
+  // Animation de rotation de la spirale
+  const rowLetter = code.charAt(0).toLowerCase();
+  const shelf = $(`.shelf--${rowLetter}`);
+  if (shelf) {
+    const coils = shelf.querySelector(".shelf__coils");
+    if (coils) {
+      coils.style.transform = "rotateX(360deg)";
+      coils.style.transition = "transform 1.2s ease-in-out";
+      setTimeout(() => { coils.style.transform = ""; coils.style.transition = ""; }, 1300);
+    }
+  }
+}
+
+function handleKeypadClick(char) {
+  Audio_.blip(true);
+  if (partie.etat !== "WAITING") return;
+
+  let current = el.panelCode.textContent;
+  if (current === "--" || current === "01" || current === "00" || current.length >= 3) {
+    current = char;
+  } else {
+    current += char;
+  }
+  el.panelCode.textContent = current;
+
+  // Code secret 666 : Surdrive Démoniaque
+  if (current === "666") {
+    Audio_.demonic();
+    Audio_.static(0.8);
+    el.panelState.textContent = "ERR. 666";
+    body.classList.add("flash", "glitch");
+    setTimeout(() => body.classList.remove("flash", "glitch"), 800);
+    speaker("LE DISTRIBUTEUR");
+    say("MON ÂME N'EST PAS À VENDRE POUR 6,66 €.", { speed: 30, cls: "angry" });
+    return;
+  }
+
+  // Distribution normale si code à 2 caractères (ex: A1, B3, C4)
+  if (current.length === 2 && /^[A-D][1-5]$/.test(current)) {
+    triggerSnackDrop(current);
+  }
+}
+
+/* ============================================================
+   9. LE PARADIS (Nuages + Étincelles + Pièces Cliquables)
    ============================================================ */
 function buildParadise() {
+  el.parClouds.innerHTML = "";
+  if (el.parSparkles) el.parSparkles.innerHTML = "";
+  el.parCoins.innerHTML = "";
+
   const nuages = document.createDocumentFragment();
   for (let i = 0; i < 9; i++) {
     const c = document.createElement("span");
     c.className = "cloud";
-    c.style.width = rndInt(140, 380) + "px";
-    c.style.height = rndInt(50, 110) + "px";
+    c.style.width = rndInt(160, 400) + "px";
+    c.style.height = rndInt(60, 120) + "px";
     c.style.top = rndInt(2, 72) + "vh";
     c.style.left = rndInt(-10, 90) + "vw";
-    c.style.opacity = rnd(.35, .85).toFixed(2);
+    c.style.opacity = rnd(.4, .85).toFixed(2);
     c.style.animationDuration = rndInt(45, 110) + "s";
     c.style.animationDelay = `-${rndInt(0, 60)}s`;
     nuages.appendChild(c);
   }
   el.parClouds.appendChild(nuages);
 
+  if (el.parSparkles) {
+    const etincelles = document.createDocumentFragment();
+    for (let i = 0; i < 28; i++) {
+      const s = document.createElement("span");
+      s.className = "sparkle";
+      const sz = rndInt(4, 10);
+      s.style.width = sz + "px";
+      s.style.height = sz + "px";
+      s.style.left = rnd(2, 98).toFixed(2) + "vw";
+      s.style.top = rnd(5, 80).toFixed(2) + "vh";
+      s.style.animationDuration = rnd(1.2, 3.5).toFixed(2) + "s";
+      s.style.animationDelay = `-${rnd(0, 3.5).toFixed(2)}s`;
+      etincelles.appendChild(s);
+    }
+    el.parSparkles.appendChild(etincelles);
+  }
+
   const pieces = document.createDocumentFragment();
-  for (let i = 0; i < 34; i++) {
+  for (let i = 0; i < 42; i++) {
     const c = document.createElement("span");
-    c.className = "coin" + (i % 5 === 0 ? " bill" : "");
+    c.className = "coin" + (i % 4 === 0 ? " bill" : "");
     c.style.left = rnd(0, 100).toFixed(2) + "vw";
-    c.style.animationDuration = rnd(4.5, 11).toFixed(2) + "s";
-    c.style.animationDelay = `-${rnd(0, 11).toFixed(2)}s`;
+    c.style.animationDuration = rnd(4.2, 10.5).toFixed(2) + "s";
+    c.style.animationDelay = `-${rnd(0, 10.5).toFixed(2)}s`;
+    
+    // Pièces cliquables
+    c.addEventListener("pointerdown", () => {
+      Audio_.coinDrop();
+      c.style.transform = "scale(2.2) rotateY(360deg)";
+      c.style.opacity = "0";
+      c.style.transition = "transform 0.35s ease, opacity 0.35s ease";
+    });
+
     pieces.appendChild(c);
   }
   el.parCoins.appendChild(pieces);
 }
 
 /* ============================================================
-   11. BRANCHEMENTS
+   10. ÉVÉNEMENTS & INITIALISATION
    ============================================================ */
 el.powerBtn.addEventListener("click", async () => {
   await Audio_.unlock();
   el.powergate.classList.add("off");
-  Eyes.start();
+  EyesAndParallax.start();
   buildParadise();
   boot();
 });
 
-// Ce que le joueur tape s'entend aussi, touche par touche
 el.input.addEventListener("input", () => {
   body.classList.toggle("feeding", el.input.value.length > 0);
   Audio_.blip(true);
@@ -829,30 +977,75 @@ el.retryBtn.addEventListener("click", async () => {
 
 el.restartBtn.addEventListener("click", recommencer);
 
-// Interaction avec le pavé numérique de la machine
-document.querySelectorAll(".pad button").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    Audio_.blip(true);
-    const char = btn.textContent.trim() || "5";
-    if (partie.etat === "WAITING") {
-      let current = el.panelCode.textContent;
-      if (current === "--" || current === "01" || current === "00" || current.length >= 3) {
-        current = char;
-      } else {
-        current += char;
-      }
-      el.panelCode.textContent = current;
-      if (current === "666" || current === "A5" || current === "D3") {
-        Audio_.static(.3);
-        Audio_.growl();
-        el.panelState.textContent = "ERR. 666";
-      }
-    }
+// Insertion de pièces interactives dans le monnayeur
+$$(".slot-coin, .slot-bill, .pay__row").forEach((slot) => {
+  slot.addEventListener("click", () => {
+    Audio_.coinDrop();
+    el.panelCode.textContent = "+0,50€";
+    setTimeout(() => { if (partie.etat === "WAITING") el.panelCode.textContent = "01"; }, 1500);
   });
 });
 
-// Entrée = réessayer après un rejet
+// Pavé numérique de la machine
+$$(".pad button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const char = btn.textContent.trim() || "5";
+    handleKeypadClick(char);
+  });
+});
+
+/* ============================================================
+   11. SYSTÈME D'INDICES & D'AIDE
+   ============================================================ */
+const indices = [
+  "💡 CONSEIL DE SURVIE #1 :\nLe Distributeur exige un VRAI potin croustillant avec des détails. Les phrases trop courtes ou vagues sont rejetées !",
+  "💡 CONSEIL DE SURVIE #2 :\nUtilisez des mots-clés comme 'sort avec', 'trompé', 'secret', 'avoué', 'dossier', 'rupture', 'soirée' ou 'rumeur'.",
+  "💡 CONSEIL DE SURVIE #3 :\nExemple valide : 'Lucas sort avec Chloé en cachette depuis la soirée de vendredi.'",
+  "💡 CONSEIL DE SURVIE #4 :\nAjouter un nom propre (ex: Thomas, Sarah, M. Dupont) augmente grandement votre score auprès du distributeur.",
+  "💡 SECRET DES ARCHIVES :\nTapez 666 sur le clavier du distributeur pour tester la réaction du monstre..."
+];
+
+let hintIndex = 0;
+
+function showHint() {
+  if (!el.hintModal || !el.hintText) return;
+  Audio_.blip(true);
+  el.hintText.textContent = indices[hintIndex];
+  el.hintModal.hidden = false;
+  el.hintModal.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => el.hintModal.classList.add("show"));
+}
+
+function hideHint() {
+  if (!el.hintModal) return;
+  Audio_.blip(false);
+  el.hintModal.classList.remove("show");
+  setTimeout(() => {
+    el.hintModal.hidden = true;
+    el.hintModal.setAttribute("aria-hidden", "true");
+  }, 300);
+}
+
+if (el.hintBtn) {
+  el.hintBtn.addEventListener("click", showHint);
+}
+if (el.hintClose) {
+  el.hintClose.addEventListener("click", hideHint);
+}
+if (el.hintNext) {
+  el.hintNext.addEventListener("click", () => {
+    hintIndex = (hintIndex + 1) % indices.length;
+    showHint();
+  });
+}
+if (el.hintModal) {
+  el.hintModal.addEventListener("click", (e) => {
+    if (e.target === el.hintModal) hideHint();
+  });
+}
+
 document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && el.hintModal && !el.hintModal.hidden) hideHint();
   if (e.key === "Enter" && partie.etat === "REJECTED" && !el.retryBtn.hidden) el.retryBtn.click();
 });
 
