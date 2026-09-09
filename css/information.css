@@ -461,10 +461,15 @@
 
 @media (max-width: 760px) {
 	.site-header {
-		min-height: 64px;
-		gap: 12px;
-		padding: 0 18px;
-		font-size: 1.8rem;
+		min-height: 60px;
+		gap: 10px;
+		padding: 12px 16px;
+		font-size: 0.85rem;
+		letter-spacing: 0.06em;
+	}
+
+	.brand {
+		font-size: 1rem;
 	}
 
 	.header-status {
@@ -472,49 +477,145 @@
 	}
 
 	.header-link {
-		padding: 8px 10px;
+		max-width: 46%;
+		padding: 8px 9px;
+		font-size: 0.72rem;
+		line-height: 1.2;
+		text-align: center;
 	}
 
 	.information-hero {
 		grid-template-columns: 1fr;
-		gap: 64px;
-		padding-top: 72px;
-		padding-bottom: 80px;
+		gap: 42px;
+		min-height: 0;
+		padding: 52px 20px 64px;
+	}
+
+	.eyebrow,
+	.section-number,
+	.card-label {
+		margin-bottom: 14px;
+		font-size: 0.85rem;
+		letter-spacing: 0.1em;
+	}
+
+	.hero-copy h1 {
+		font-size: clamp(2.8rem, 14vw, 4.6rem);
+		line-height: 0.9;
+	}
+
+	.hero-intro {
+		max-width: 34rem;
+		margin: 28px 0 24px;
+		font-size: 1.15rem;
+		line-height: 1.5;
+	}
+
+	.hero-note {
+		font-size: 0.9rem;
+		line-height: 1.5;
 	}
 
 	.poster-file {
-		width: min(100%, 390px);
+		width: min(100%, 360px);
+		box-sizing: border-box;
+		padding: 12px 12px 18px;
+		box-shadow: 10px 10px 0 #e90036;
+	}
+
+	.file-stamp {
+		margin-bottom: 10px;
+		padding: 6px 8px;
+		font-size: 0.9rem;
+	}
+
+	.poster-file figcaption {
+		gap: 6px;
+		padding-top: 12px;
+	}
+
+	.poster-file figcaption span {
+		font-size: 0.85rem;
+		letter-spacing: 0.08em;
+	}
+
+	.poster-file figcaption strong {
+		font-size: 1rem;
 	}
 
 	.trailer-section {
 		grid-template-columns: 1fr;
-		padding-top: 64px;
-		padding-bottom: 72px;
+		gap: 28px;
+		padding: 52px 20px 64px;
+	}
+
+	.trailer-heading h2 {
+		font-size: clamp(2rem, 9vw, 3.2rem);
+	}
+
+	.trailer-heading > p:last-child {
+		margin-top: 16px;
+		font-size: 1rem;
+		line-height: 1.5;
+	}
+
+	.trailer-frame {
+		padding: 7px 7px 24px;
+		box-shadow: 5px 5px 0 #e90036;
+	}
+
+	.trailer-label {
+		right: 9px;
+		bottom: 6px;
+		font-size: 0.72rem;
 	}
 
 	.dossier-section {
-		padding-top: 64px;
-		padding-bottom: 64px;
+		padding: 52px 20px 64px;
+	}
+
+	.community-section,
+	.faq-section {
+		padding: 52px 20px 64px;
+	}
+
+	.section-heading {
+		align-items: flex-start;
+		gap: 12px;
+		margin-bottom: 28px;
+	}
+
+	.section-heading h2 {
+		font-size: clamp(1.8rem, 8vw, 3rem);
+		line-height: 1;
 	}
 
 	.dossier-grid,
 	.credits-grid {
 		grid-template-columns: 1fr;
-		gap: 36px;
+		gap: 28px;
 	}
 
 	.credits-grid {
-		gap: 14px;
+		gap: 12px;
 	}
 
 	.reviews-grid {
 		grid-template-columns: 1fr;
+		gap: 12px;
 	}
 
-	.community-section,
-	.faq-section {
-		padding-top: 64px;
-		padding-bottom: 64px;
+	.lead-copy {
+		font-size: 1.35rem;
+		line-height: 1.35;
+	}
+
+	.metadata p {
+		font-size: 1.05rem;
+	}
+
+	.metadata span {
+		font-size: 0.85rem;
 	}
 
 	.credit-card {
@@ -522,12 +623,55 @@
 	}
 
 	.credit-card h3 {
-		margin-top: 28px;
+		margin: 24px 0 12px;
+		font-size: 1.35rem;
+	}
+
+	.credit-card p:last-child {
+		font-size: 1.05rem;
+		line-height: 1.5;
+	}
+
+	.review-card {
+		min-height: 0;
+		padding: 20px 18px 20px 34px;
+		font-size: 1.1rem;
+		line-height: 1.45;
+	}
+
+	.review-card::before {
+		top: 17px;
+		left: 14px;
+		font-size: 0.85rem;
+	}
+
+	.faq-section {
+		padding-top: 52px;
+	}
+
+	.faq-list summary {
+		gap: 12px;
+		padding: 18px 0;
+		font-size: 1.35rem;
+		line-height: 1.25;
+	}
+
+	.faq-list summary::after {
+		font-size: 1.25rem;
+	}
+
+	.faq-list details p {
+		margin: 0 32px 18px 0;
+		font-size: 1.05rem;
+		line-height: 1.5;
 	}
 
 	.site-footer {
 		flex-direction: column;
 		gap: 10px;
+		padding: 24px 20px;
+		font-size: 0.85rem;
+		line-height: 1.4;
 	}
 }
 
