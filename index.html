@@ -14,6 +14,46 @@
 </head>
 <body class="is-off">
 
+    <style>
+        .information-button {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 1000;
+            display: inline-flex;
+            max-width: calc(100vw - 32px);
+            min-height: 48px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 999px;
+            background: #222;
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1.2;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+    
+        .information-button:hover,
+        .information-button:focus-visible {
+            background: #555;
+            transform: translateY(-2px);
+        }
+    
+        @media (max-width: 480px) {
+            .information-button {
+                right: 16px;
+                bottom: 16px;
+            }
+        }
+    </style>
+
 <!-- CALQUES D'AMBIANCE VHS / CRT -->
 <div class="fx fx--scanlines" aria-hidden="true"></div>
 <div class="fx fx--grain" aria-hidden="true"></div>
